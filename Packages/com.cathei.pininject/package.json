@@ -1,0 +1,10 @@
+{
+  "name": "com.cathei.pininject",
+  "displayName": "PinInject",
+  "version": "0.0.1",
+  "unity": "2019.4",
+  "description": "Minimalistic Dependency Injection tool for Unity",
+  "license": "MIT",
+  "documentationUrl": "https://github.com/cathei/PinInject",
+  "dependencies": { }
+}
