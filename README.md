@@ -1,2 +1,7 @@
 # PinInject
-Simple and Intuitive Dependency Injection tool for Unity
+Minimalistic Dependency Injection tool for Unity
+
+## Dependency Injection
+
+## Why PinInject?
+* Minimal API & Complexity
