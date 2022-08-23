@@ -6,5 +6,6 @@ namespace Cathei.PinInject
 {
     public interface IInjectContext
     {
+        void Configure(InjectContainer container);
     }
 }
