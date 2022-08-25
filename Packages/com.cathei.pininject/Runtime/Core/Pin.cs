@@ -6,14 +6,14 @@ namespace Cathei.PinInject
 {
     public static partial class Pin
     {
-        private static readonly InjectContainer _rootContainer = new();
+        private static readonly InjectContainer _rootContainer = new InjectContainer();
 
-        public static void ConfigureGlobal<T>() where T : IInjectContext, new()
+        public static void AddGlobalContext<T>() where T : IInjectContext, new()
         {
             new T().Configure(_rootContainer);
         }
 
-        public static void ConfigureGlobal(IInjectContext context)
+        public static void AddGlobalContext(IInjectContext context)
         {
             context.Configure(_rootContainer);
         }

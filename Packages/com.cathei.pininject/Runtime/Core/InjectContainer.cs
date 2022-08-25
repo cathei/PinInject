@@ -25,27 +25,28 @@ namespace Cathei.PinInject
             _parent = null;
             _builders.Clear();
             _instances.Clear();
+
+            // container itself is always binded
+            _instances.Add(typeof(InjectContainer), this);
         }
 
-        internal T Reslove<T>()
+        internal object Resolve(Type type)
         {
-            Type type = typeof(T);
-
             if (_instances.TryGetValue(type, out var instance))
-                return (T)instance;
+                return instance;
 
             if (_builders.TryGetValue(type, out var builder))
             {
                 instance = builder();
                 _instances.Add(type, instance);
-                return (T)instance;
+                return instance;
             }
 
             if (_parent == null)
                 throw new InjectException($"Type {type} cannot be resolved");
 
             // tail call would be optimized
-            return _parent.Reslove<T>();
+            return _parent.Resolve(type);
         }
 
         public void Bind<T>() where T : new()
