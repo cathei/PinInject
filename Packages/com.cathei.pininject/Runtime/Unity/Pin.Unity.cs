@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cathei.PinInject.Internal;
 using UnityEngine;
 
 namespace Cathei.PinInject
@@ -26,7 +27,8 @@ namespace Cathei.PinInject
             return GameObject.Instantiate(prefab, parent);
         }
 
-        private static GameObject InstantiateInternal(GameObject prefab, Transform parent, Func<GameObject, Transform, GameObject> instantiator)
+        private static GameObject InstantiateInternal(
+            GameObject prefab, Transform parent, Func<GameObject, Transform, GameObject> instantiator)
         {
             bool savedActiveSelf = prefab.activeSelf;
 
@@ -35,9 +37,11 @@ namespace Cathei.PinInject
                 // turn off prefab to make sure Awake() is not called before injection
                 prefab.SetActive(false);
 
+                InjectCacheComponent.CacheReferences(prefab);
+
                 var instance = instantiator(prefab, parent);
 
-                InjectInternal(instance, null);
+                InjectInternal(instance);
 
                 instance.SetActive(savedActiveSelf);
 
@@ -49,9 +53,12 @@ namespace Cathei.PinInject
             }
         }
 
-        private static void InjectInternal(GameObject instance, IInjectContext[] contexts)
+        private static void InjectInternal(GameObject instance)
         {
+            var cache = InjectCacheComponent.CacheReferences(instance);
+            var container = InjectContainerComponent.FindParentContainer(instance.transform);
 
+            cache.InjectComponents(container);
         }
     }
     

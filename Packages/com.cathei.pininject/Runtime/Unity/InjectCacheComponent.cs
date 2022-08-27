@@ -13,9 +13,11 @@ namespace Cathei.PinInject.Internal
         [Serializable]
         public struct InnerPrefabReferences
         {
+            public InjectContainerComponent container;
             public MonoBehaviour unityObject;
         }
 
+        [SerializeField]
         private List<InnerPrefabReferences> _innerReferences = null;
 
         // unity itself is single-threaded so just have temp variable as static
@@ -45,13 +47,29 @@ namespace Cathei.PinInject.Internal
         internal void InjectComponents(InjectContainer container)
         {
             if (_innerReferences == null)
-                return;
+                CacheComponents();
 
             foreach (var reference in _innerReferences)
             {
                 var cache = ReflectionCache.Get(reference.unityObject.GetType());
                 cache.Inject(reference.unityObject, container);
             }
+
+            // when it's injected, references should be invalidated
+            _innerReferences.Clear();
+        }
+
+        public static InjectCacheComponent CacheReferences(GameObject gameObject)
+        {
+            var component = gameObject.GetComponent<InjectCacheComponent>();
+            if (component != null)
+                return component;
+
+            component = gameObject.AddComponent<InjectCacheComponent>();
+            component.hideFlags = HideFlags.HideAndDontSave;
+            component.CacheComponents();
+
+            return component;
         }
     }
 }

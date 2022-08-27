@@ -11,6 +11,29 @@ namespace Cathei.PinInject.Internal
     /// </summary>
     public class InjectContainerComponent : MonoBehaviour
     {
-        [Inject] internal InjectContainer _container;
+        [Inject] internal InjectContainer _container = new InjectContainer();
+
+        public static InjectContainer FindParentContainer(Transform transform)
+        {
+            InjectContainer parentContainer = null;
+
+            while (transform != null)
+            {
+                var component = transform.GetComponent<InjectContainerComponent>();
+
+                if (component != null)
+                {
+                    parentContainer = component._container;
+                    break;
+                }
+
+                transform = transform.parent;
+            }
+
+            if (parentContainer == null)
+                parentContainer = Pin.GetSceneContainer(transform.gameObject.scene);
+
+            return parentContainer;
+        }
     }
 }
