@@ -13,6 +13,8 @@ namespace Cathei.PinInject.Internal
     {
         [Inject] internal InjectContainer _container = new InjectContainer();
 
+        [SerializeField] internal InjectContainerComponent parent;
+
         public static InjectContainerComponent GetOrCreate(GameObject gameObject)
         {
             var component = gameObject.GetComponent<InjectContainerComponent>();

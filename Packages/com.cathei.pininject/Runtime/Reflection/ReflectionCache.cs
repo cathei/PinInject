@@ -7,7 +7,7 @@ namespace Cathei.PinInject.Internal
 {
     public class ReflectionCache
     {
-        private static Dictionary<Type, ReflectionCache> _cachePerType = new Dictionary<Type, ReflectionCache>();
+        private static readonly Dictionary<Type, ReflectionCache> _cachePerType = new Dictionary<Type, ReflectionCache>();
 
         public static ReflectionCache Get(Type type)
         {
@@ -19,8 +19,8 @@ namespace Cathei.PinInject.Internal
             return cache;
         }
 
-        private List<InjectableProperty> _injectables = null;
-        private List<ResolvableProperty> _resolvables = null;
+        private readonly List<InjectableProperty> _injectables = null;
+        private readonly List<ResolvableProperty> _resolvables = null;
 
         public bool HasAnyAttribute => _injectables != null || _resolvables != null;
 
@@ -114,5 +114,4 @@ namespace Cathei.PinInject.Internal
             }
         }
     }
-
 }

@@ -21,7 +21,10 @@ namespace Cathei.PinInject.Internal
         }
 
         [SerializeField]
-        private List<InnerPrefabReferences> _innerReferences = null;
+        private List<InnerPrefabReferences> _innerReferences = new List<InnerPrefabReferences>();
+
+        [SerializeField]
+        private bool _isValid = false;
 
         // unity itself is single-threaded so just have temp variable as static
         private static readonly List<MonoBehaviour> _tempComponents = new List<MonoBehaviour>();
@@ -30,26 +33,52 @@ namespace Cathei.PinInject.Internal
         // prefab version is recommended for performance
         internal void CacheComponents()
         {
-            if (_innerReferences != null)
+            if (!_isValid)
                 return;
 
-            _innerReferences = new List<InnerPrefabReferences>();
+            _innerReferences.Clear();
+            CacheComponentInternal(transform, null);
 
-            GetComponentsInChildren(true, _tempComponents);
+            _isValid = true;
+        }
+
+        private void CacheComponentInternal(Transform target, InjectContainerComponent container)
+        {
+            if (target.GetComponent<IInjectContext>() != null)
+            {
+                // child container will be used for this game object
+                var childContainer = InjectContainerComponent.GetOrCreate(target.gameObject);
+                childContainer.parent = container;
+                container = childContainer;
+            }
+
+            target.GetComponents(_tempComponents);
 
             foreach (var component in _tempComponents)
             {
                 var cache = ReflectionCache.Get(component.GetType());
 
                 if (cache.HasAnyAttribute)
-                    _innerReferences.Add(new InnerPrefabReferences { unityObject = component });
+                {
+                    _innerReferences.Add(new InnerPrefabReferences
+                    {
+                        container = container,
+                        unityObject = component
+                    });
+                }
+            }
+
+            for (int i = 0; i < target.childCount; ++i)
+            {
+                Transform child = target.GetChild(i);
+                CacheComponentInternal(child, container);
             }
         }
 
         // should be only called on instance
         internal void InjectComponents(InjectContainer container)
         {
-            if (_innerReferences == null)
+            if (!_isValid)
                 CacheComponents();
 
             foreach (var reference in _innerReferences)
@@ -59,7 +88,7 @@ namespace Cathei.PinInject.Internal
             }
 
             // when it's injected, references should be invalidated
-            _innerReferences.Clear();
+            _isValid = false;
         }
 
         public static InjectCacheComponent CacheReferences(GameObject gameObject)
