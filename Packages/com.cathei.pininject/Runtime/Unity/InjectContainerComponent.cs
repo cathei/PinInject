@@ -13,6 +13,17 @@ namespace Cathei.PinInject.Internal
     {
         [Inject] internal InjectContainer _container = new InjectContainer();
 
+        public static InjectContainerComponent GetOrCreate(GameObject gameObject)
+        {
+            var component = gameObject.GetComponent<InjectContainerComponent>();
+            if (component != null)
+                return component;
+
+            component = gameObject.AddComponent<InjectContainerComponent>();
+            component.hideFlags = HideFlags.HideAndDontSave;
+            return component;
+        }
+
         public static InjectContainer FindParentContainer(Transform transform)
         {
             InjectContainer parentContainer = null;

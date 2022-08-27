@@ -10,6 +10,9 @@ namespace Cathei.PinInject.Internal
     /// </summary>
     public class InjectCacheComponent : MonoBehaviour
     {
+        // [Serializable]
+        // public struct 
+
         [Serializable]
         public struct InnerPrefabReferences
         {
