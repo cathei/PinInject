@@ -81,10 +81,25 @@ namespace Cathei.PinInject.Internal
 
         public void Inject(object obj, InjectContainer container)
         {
+            var context = obj as IInjectContext;
+
+            // another depth of injection
+            if (context != null)
+            {
+                var childContainer = new InjectContainer();
+                childContainer.SetParent(container);
+                container = childContainer;
+            }
+
             if (_injectables != null)
             {
                 foreach (var injectable in _injectables)
                     injectable.Inject(obj, container);
+            }
+
+            if (context != null)
+            {
+                context.Configure(container);
             }
 
             if (_resolvables != null)
