@@ -17,7 +17,7 @@ namespace Cathei.PinInject.Internal
         public struct InnerPrefabReferences
         {
             public InjectContainerComponent container;
-            public MonoBehaviour unityObject;
+            public MonoBehaviour component;
         }
 
         [SerializeField]
@@ -50,12 +50,23 @@ namespace Cathei.PinInject.Internal
                 var childContainer = InjectContainerComponent.GetOrCreate(target.gameObject);
                 childContainer.parent = container;
                 container = childContainer;
+
+                // container referencing itself
+                _innerReferences.Add(new InnerPrefabReferences
+                {
+                    container = container,
+                    component = container
+                });
             }
 
             target.GetComponents(_tempComponents);
 
             foreach (var component in _tempComponents)
             {
+                // it is already included
+                if (component is InjectContainerComponent)
+                    continue;
+
                 var cache = ReflectionCache.Get(component.GetType());
 
                 if (cache.HasAnyAttribute)
@@ -63,7 +74,7 @@ namespace Cathei.PinInject.Internal
                     _innerReferences.Add(new InnerPrefabReferences
                     {
                         container = container,
-                        unityObject = component
+                        component = component
                     });
                 }
             }
@@ -83,8 +94,16 @@ namespace Cathei.PinInject.Internal
 
             foreach (var reference in _innerReferences)
             {
-                var cache = ReflectionCache.Get(reference.unityObject.GetType());
-                cache.Inject(reference.unityObject, container);
+                if (reference.container == reference.component)
+                {
+                    var parent = reference.container.parent._container ?? container;
+
+                    reference.container._container.Reset();
+                    reference.container._container.SetParent(parent);
+                }
+
+                var cache = ReflectionCache.Get(reference.component.GetType());
+                cache.Inject(reference.component, container);
             }
 
             // when it's injected, references should be invalidated

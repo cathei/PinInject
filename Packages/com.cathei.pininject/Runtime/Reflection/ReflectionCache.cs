@@ -92,6 +92,9 @@ namespace Cathei.PinInject.Internal
                 foreach (var resolvable in _resolvables)
                     resolvable.Resolve(obj, container);
             }
+
+            if (obj is IPostInjectHandler postInjectHandler)
+                postInjectHandler.PostInject();
         }
 
         public struct InjectableProperty
