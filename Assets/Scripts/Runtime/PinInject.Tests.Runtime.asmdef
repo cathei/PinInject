@@ -1,8 +1,9 @@
 {
-    "name": "PinInject.Tests",
+    "name": "PinInject.Tests.Runtime",
     "rootNamespace": "",
     "references": [
         "PinInject",
+        "PinInject.Tests.Common",
         "UnityEngine.TestRunner"
     ],
     "includePlatforms": [],
