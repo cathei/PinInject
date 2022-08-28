@@ -7,7 +7,7 @@ namespace Cathei.PinInject
     public class InjectContainer
     {
         // type -> constructor
-        public Dictionary<Type, Func<object>> _builders = new Dictionary<Type, Func<object>>();
+        // public Dictionary<Type, Func<object>> _builders = new Dictionary<Type, Func<object>>();
 
         // type -> instance
         public Dictionary<Type, object> _instances = new Dictionary<Type, object>();
@@ -23,7 +23,7 @@ namespace Cathei.PinInject
         internal void Reset()
         {
             _parent = null;
-            _builders.Clear();
+            // _builders.Clear();
             _instances.Clear();
 
             // container itself is always binded
@@ -35,12 +35,12 @@ namespace Cathei.PinInject
             if (_instances.TryGetValue(type, out var instance))
                 return instance;
 
-            if (_builders.TryGetValue(type, out var builder))
-            {
-                instance = builder();
-                _instances.Add(type, instance);
-                return instance;
-            }
+            // if (_builders.TryGetValue(type, out var builder))
+            // {
+            //     instance = builder();
+            //     _instances.Add(type, instance);
+            //     return instance;
+            // }
 
             if (_parent == null)
                 throw new InjectException($"Type {type} cannot be resolved");
@@ -49,19 +49,19 @@ namespace Cathei.PinInject
             return _parent.Resolve(type);
         }
 
-        public void Bind<T>() where T : new()
-        {
-            _builders.Add(typeof(T), () => new T());
-        }
-
         public void Bind<T>(T instance)
         {
             _instances.Add(typeof(T), instance);
         }
 
-        public void Bind<T, TImpl>() where TImpl : T, new()
-        {
-            _builders.Add(typeof(T), () => new TImpl());
-        }
+        // public void Bind<T>() where T : new()
+        // {
+        //     _builders.Add(typeof(T), () => new T());
+        // }
+
+        // public void Bind<T, TImpl>() where TImpl : T, new()
+        // {
+        //     _builders.Add(typeof(T), () => new TImpl());
+        // }
     }
 }
