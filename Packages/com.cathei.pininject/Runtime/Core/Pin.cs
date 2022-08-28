@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cathei.PinInject.Internal;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -35,13 +36,13 @@ namespace Cathei.PinInject
             context.Configure(_rootContainer);
         }
 
-        // internal static void AddSceneContext(Scene scene, IInjectContext context)
-        // {
-        //     if (!_sceneContainers.TryGetValue(scene, out var container))
-        //         throw new InjectException("Scene is not loaded");
+        public static void Inject<T>(T obj, InjectContainer container = null) where T : class
+        {
+            container ??= _rootContainer;
 
-        //     context.Configure(container);
-        // }
+            var cache = ReflectionCache.Get(obj.GetType());
+            cache.Inject(obj, container);
+        }
 
         internal static InjectContainer GetSceneContainer(Scene scene)
         {

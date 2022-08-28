@@ -30,9 +30,11 @@ namespace Cathei.PinInject.Internal
         {
             InjectContainer parentContainer = null;
 
-            while (transform != null)
+            Transform parent = transform;
+
+            while (parent != null)
             {
-                var component = transform.GetComponent<InjectContainerComponent>();
+                var component = parent.GetComponent<InjectContainerComponent>();
 
                 if (component != null)
                 {
@@ -40,7 +42,7 @@ namespace Cathei.PinInject.Internal
                     break;
                 }
 
-                transform = transform.parent;
+                parent = parent.parent;
             }
 
             if (parentContainer == null)

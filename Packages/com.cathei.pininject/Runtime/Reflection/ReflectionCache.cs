@@ -39,7 +39,7 @@ namespace Cathei.PinInject.Internal
 
                 if (injectAttr != null)
                 {
-                    if (prop.SetMethod != null)
+                    if (prop.SetMethod == null)
                         throw new InjectException($"Property {prop.Name} is marked as [Inject] without setter");
 
                     _injectables ??= new List<InjectableProperty>();
@@ -49,7 +49,7 @@ namespace Cathei.PinInject.Internal
 
                 if (resolveAttr != null)
                 {
-                    if (prop.GetMethod != null)
+                    if (prop.GetMethod == null)
                         throw new InjectException($"Property {prop.Name} is marked as [Resolve] without getter");
 
                     _resolvables ??= new List<ResolvableProperty>();
