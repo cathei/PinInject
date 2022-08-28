@@ -10,7 +10,7 @@ namespace Cathei.PinInject
         // public Dictionary<Type, Func<object>> _builders = new Dictionary<Type, Func<object>>();
 
         // type -> instance
-        public Dictionary<Type, object> _instances = new Dictionary<Type, object>();
+        public Dictionary<(Type, string), object> _instances = new Dictionary<(Type, string), object>();
 
         // direct parent to current container
         private InjectContainer _parent;
@@ -27,12 +27,12 @@ namespace Cathei.PinInject
             _instances.Clear();
 
             // container itself is always binded
-            _instances.Add(typeof(InjectContainer), this);
+            _instances.Add((typeof(InjectContainer), null), this);
         }
 
-        internal object Resolve(Type type)
+        internal object Resolve(Type type, string id)
         {
-            if (_instances.TryGetValue(type, out var instance))
+            if (_instances.TryGetValue((type, id), out var instance))
                 return instance;
 
             // if (_builders.TryGetValue(type, out var builder))
@@ -46,12 +46,17 @@ namespace Cathei.PinInject
                 throw new InjectException($"Type {type} cannot be resolved");
 
             // tail call would be optimized
-            return _parent.Resolve(type);
+            return _parent.Resolve(type, id);
         }
 
         public void Bind<T>(T instance)
         {
-            _instances.Add(typeof(T), instance);
+            _instances.Add((typeof(T), null), instance);
+        }
+
+        public void Bind<T>(string name, T instance)
+        {
+            _instances.Add((typeof(T), name), instance);
         }
 
         // public void Bind<T>() where T : new()

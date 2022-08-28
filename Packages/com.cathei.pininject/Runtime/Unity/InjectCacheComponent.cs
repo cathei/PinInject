@@ -33,7 +33,7 @@ namespace Cathei.PinInject.Internal
         // prefab version is recommended for performance
         internal void CacheComponents()
         {
-            if (!_isValid)
+            if (_isValid)
                 return;
 
             _innerReferences.Clear();
@@ -87,19 +87,28 @@ namespace Cathei.PinInject.Internal
         }
 
         // should be only called on instance
-        internal void InjectComponents(InjectContainer container)
+        internal void InjectComponents(InjectContainer rootContainer)
         {
             if (!_isValid)
                 CacheComponents();
 
             foreach (var reference in _innerReferences)
             {
-                if (reference.container == reference.component)
-                {
-                    var parent = reference.container.parent._container ?? container;
+                InjectContainer container = reference.container?._container;
 
-                    reference.container._container.Reset();
-                    reference.container._container.SetParent(parent);
+                if (container != null)
+                {
+                    if (reference.container == reference.component)
+                    {
+                        var parent = reference.container.parent?._container ?? rootContainer;
+
+                        container.Reset();
+                        container.SetParent(parent);
+                    }
+                }
+                else
+                {
+                    container = rootContainer;
                 }
 
                 var cache = ReflectionCache.Get(reference.component.GetType());

@@ -9,11 +9,18 @@ using UnityEngine.TestTools;
 [TestFixture]
 public class Test1SceneTests
 {
-    [OneTimeSetUp]
-    public void Setup()
+    private bool initialized = false;
+
+    [UnitySetUp]
+    public IEnumerator Setup()
     {
-        Pin.Initialize();
-        SceneManager.LoadScene("TestInject1");
+        if (!initialized)
+        {
+            Pin.Initialize();
+            SceneManager.LoadScene("TestInject1", LoadSceneMode.Single);
+
+            yield return null;
+        }
     }
 
     [Test]
@@ -24,31 +31,28 @@ public class Test1SceneTests
 
         Assert.AreEqual(99, rootLeaf.BindWithInterface.Value);
         Assert.AreEqual("TestScene1", rootLeaf.BindWithNew.Value);
-        Assert.AreSame(sceneObj, rootLeaf.SceneObject);
+        Assert.AreSame(sceneObj, rootLeaf.SceneObject.gameObject);
     }
 
     [Test]
     public void Test1Scene_ContextLeaf()
     {
+        var rootLeaf = GameObject.Find("Root/Leaf").GetComponent<Test1LeafObject>();
         var contextLeaf1 = GameObject.Find("Root/Context").GetComponent<Test1LeafObject>();
         var contextLeaf2 = GameObject.Find("Root/Context/Leaf").GetComponent<Test1LeafObject>();
 
-        // Assert.AreEqual(99, rootLeaf.BindWithInterface.Value);
-        // Assert.AreEqual("TestScene1", rootLeaf.BindWithNew.Value);
+        Assert.AreEqual(10101, contextLeaf1.BindWithInterface.Value);
+        Assert.AreEqual(10101, contextLeaf2.BindWithInterface.Value);
 
-        // Assert.AreEqual(, contextLeaf1.BindWithInterface.Value);
-        // Assert.AreEqual("TestScene1", rootLeaf.BindWithNew.Value);
-        // Assert.AreSame(sceneObj, rootLeaf.SceneObject);
+        Assert.AreSame(contextLeaf1.BindWithInterface, contextLeaf2.BindWithInterface);
+        Assert.AreNotSame(contextLeaf1.BindWithInterface, rootLeaf.BindWithInterface);
     }
 
     [Test]
     public void Test1Scene_NestedContext()
     {
-        var sceneObj = GameObject.Find("SceneObject");
-        var rootLeaf = GameObject.Find("Root/Leaf").GetComponent<Test1LeafObject>();
+        var contextLeaf = GameObject.Find("Root/Context/InnerContext/Leaf").GetComponent<Test1LeafObject>();
 
-        Assert.AreEqual(99, rootLeaf.BindWithInterface.Value);
-        Assert.AreEqual("TestScene1", rootLeaf.BindWithNew.Value);
-        Assert.AreSame(sceneObj, rootLeaf.SceneObject);
+        Assert.AreEqual(20202, contextLeaf.BindWithInterface.Value);
     }
 }

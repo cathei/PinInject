@@ -44,7 +44,7 @@ namespace Cathei.PinInject.Internal
 
                     _injectables ??= new List<InjectableProperty>();
                     _injectables.Add(new InjectableProperty((obj, container) =>
-                        prop.SetValue(obj, container.Resolve(prop.PropertyType))));
+                        prop.SetValue(obj, container.Resolve(prop.PropertyType, injectAttr.Id))));
                 }
 
                 if (resolveAttr != null)
@@ -67,7 +67,7 @@ namespace Cathei.PinInject.Internal
                 {
                     _injectables ??= new List<InjectableProperty>();
                     _injectables.Add(new InjectableProperty((obj, container) =>
-                        field.SetValue(obj, container.Resolve(field.FieldType))));
+                        field.SetValue(obj, container.Resolve(field.FieldType, injectAttr.Id))));
                 }
 
                 if (resolveAttr != null)

@@ -13,7 +13,7 @@ public class GlobalInjectTests
         public void Configure(InjectContainer container)
         {
             container.Bind<IBindWithInterface>(new BindWithInterface(1));
-            container.Bind<BindWithNew>();
+            container.Bind(new BindWithNew());
         }
     }
 
