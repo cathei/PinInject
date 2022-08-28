@@ -6,6 +6,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
+/// <summary>
+/// Test1 scene is for testing root and hierarchical injection.
+/// Test2 scene is for prefab nesting and instantiation.
+/// </summary>
 [TestFixture]
 public class Test1SceneTests
 {

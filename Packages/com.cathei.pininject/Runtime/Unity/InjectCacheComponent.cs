@@ -42,13 +42,15 @@ namespace Cathei.PinInject.Internal
             _isValid = true;
         }
 
-        private void CacheComponentInternal(Transform target, InjectContainerComponent container)
+        private void CacheComponentInternal(Transform target, InjectContainerComponent parentContainer)
         {
+            InjectContainerComponent container = parentContainer;
+
             if (target.GetComponent<IInjectContext>() != null)
             {
                 // child container will be used for this game object
                 var childContainer = InjectContainerComponent.GetOrCreate(target.gameObject);
-                childContainer.parent = container;
+                childContainer.parent = parentContainer;
                 container = childContainer;
 
                 // container referencing itself
@@ -61,15 +63,22 @@ namespace Cathei.PinInject.Internal
 
             target.GetComponents(_tempComponents);
 
+            // contexts should be injected first
+            _tempComponents.Sort((x, y) => x is IInjectContext ? -1 : 1);
+
             foreach (var component in _tempComponents)
             {
                 // it is already included
                 if (component is InjectContainerComponent)
                     continue;
 
+                // ignore scene inject component
+                if (component is ISceneInjectContext)
+                    continue;
+
                 var cache = ReflectionCache.Get(component.GetType());
 
-                if (cache.HasAnyAttribute)
+                if (cache.HasAnyAttribute || component is IInjectContext)
                 {
                     _innerReferences.Add(new InnerPrefabReferences
                     {
@@ -104,6 +113,11 @@ namespace Cathei.PinInject.Internal
 
                         container.Reset();
                         container.SetParent(parent);
+                    }
+
+                    if (reference.component is IInjectContext context)
+                    {
+                        context.Configure(container);
                     }
                 }
                 else
