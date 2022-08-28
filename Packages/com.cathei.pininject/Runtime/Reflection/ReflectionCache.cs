@@ -9,6 +9,8 @@ namespace Cathei.PinInject.Internal
     {
         private static readonly Dictionary<Type, ReflectionCache> _cachePerType = new Dictionary<Type, ReflectionCache>();
 
+        private static readonly HashSet<object> _recursiveCheck = new HashSet<object>();
+
         public static ReflectionCache Get(Type type)
         {
             if (_cachePerType.TryGetValue(type, out var cache))
@@ -54,7 +56,7 @@ namespace Cathei.PinInject.Internal
 
                     _resolvables ??= new List<ResolvableProperty>();
                     _resolvables.Add(new ResolvableProperty((obj, container) =>
-                        Get(prop.PropertyType).Inject(prop.GetValue(obj), container)));
+                        Get(prop.PropertyType).InjectInternal(prop.GetValue(obj), container)));
                 }
             }
 
@@ -74,13 +76,26 @@ namespace Cathei.PinInject.Internal
                 {
                     _resolvables ??= new List<ResolvableProperty>();
                     _resolvables.Add(new ResolvableProperty((obj, container) =>
-                        Get(field.FieldType).Inject(field.GetValue(obj), container)));
+                        Get(field.FieldType).InjectInternal(field.GetValue(obj), container)));
                 }
             }
         }
 
         public void Inject(object obj, InjectContainer container)
         {
+            // entry point
+            _recursiveCheck.Clear();
+
+            InjectInternal(obj, container);
+        }
+
+        private void InjectInternal(object obj, InjectContainer container)
+        {
+            if (_recursiveCheck.Contains(obj))
+                throw new InjectException($"Circular dependency injection on {obj.GetType()} {obj}");
+
+            _recursiveCheck.Add(obj);
+
             var context = obj as IInjectContext;
 
             // another depth of injection
