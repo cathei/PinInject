@@ -9,8 +9,6 @@ namespace Cathei.PinInject.Internal
     {
         private static readonly Dictionary<Type, ReflectionCache> _cachePerType = new Dictionary<Type, ReflectionCache>();
 
-        private static readonly HashSet<object> _recursiveCheck = new HashSet<object>();
-
         public static ReflectionCache Get(Type type)
         {
             if (_cachePerType.TryGetValue(type, out var cache))
@@ -21,10 +19,13 @@ namespace Cathei.PinInject.Internal
             return cache;
         }
 
-        private readonly List<InjectableProperty> _injectables = null;
-        private readonly List<ResolvableProperty> _resolvables = null;
+        public IEnumerable<InjectableProperty> Injectables => _injectables;
+        public IEnumerable<ResolvableProperty> Resolvables => _resolvables;
 
         public bool HasAnyAttribute => _injectables != null || _resolvables != null;
+
+        private readonly List<InjectableProperty> _injectables = null;
+        private readonly List<ResolvableProperty> _resolvables = null;
 
         internal ReflectionCache(Type type)
         {
@@ -54,7 +55,7 @@ namespace Cathei.PinInject.Internal
                         throw new InjectException($"Property {prop.Name} is marked as [Resolve] without getter");
 
                     _resolvables ??= new List<ResolvableProperty>();
-                    _resolvables.Add(new ResolvableProperty(prop.PropertyType, prop.GetValue));
+                    _resolvables.Add(new ResolvableProperty(prop.GetValue));
                 }
             }
 
@@ -72,58 +73,12 @@ namespace Cathei.PinInject.Internal
                 if (resolveAttr != null)
                 {
                     _resolvables ??= new List<ResolvableProperty>();
-                    _resolvables.Add(new ResolvableProperty(field.FieldType, field.GetValue));
+                    _resolvables.Add(new ResolvableProperty(field.GetValue));
                 }
             }
         }
 
-        public void Inject(object obj, InjectContainer container)
-        {
-            // entry point
-            _recursiveCheck.Clear();
-
-            InjectInternal(obj, container);
-        }
-
-        private void InjectInternal(object obj, InjectContainer container)
-        {
-            if (_recursiveCheck.Contains(obj))
-                throw new InjectException($"Circular dependency injection on {obj.GetType()} {obj}");
-
-            _recursiveCheck.Add(obj);
-
-            var context = obj as IInjectContext;
-
-            // another depth of injection
-            if (context != null)
-            {
-                var childContainer = new InjectContainer();
-                childContainer.SetParent(container);
-                container = childContainer;
-            }
-
-            if (_injectables != null)
-            {
-                foreach (var injectable in _injectables)
-                    injectable.Inject(obj, container);
-            }
-
-            if (context != null)
-            {
-                context.Configure(container);
-            }
-
-            if (_resolvables != null)
-            {
-                foreach (var resolvable in _resolvables)
-                    resolvable.Resolve(obj, container);
-            }
-
-            if (obj is IPostInjectHandler postInjectHandler)
-                postInjectHandler.PostInject();
-        }
-
-        private struct InjectableProperty
+        public struct InjectableProperty
         {
             public readonly Type Type;
             public readonly string Id;
@@ -135,32 +90,15 @@ namespace Cathei.PinInject.Internal
                 Id = id;
                 Setter = setter;
             }
-
-            public void Inject(object obj, InjectContainer container)
-            {
-                Setter(obj, container.Resolve(Type, Id));
-            }
         }
 
-        private struct ResolvableProperty
+        public struct ResolvableProperty
         {
-            public readonly Type Type;
             public readonly Func<object, object> Getter;
 
-            public ResolvableProperty(Type type, Func<object, object> getter)
+            public ResolvableProperty(Func<object, object> getter)
             {
-                Type = type;
                 Getter = getter;
-            }
-
-            public void Resolve(object obj, InjectContainer container)
-            {
-                object value = Getter(obj);
-
-                if (value == null)
-                    return;
-
-                Get(Type).InjectInternal(value, container);
             }
         }
     }

@@ -3,28 +3,53 @@ using System.Collections;
 using System.Collections.Generic;
 using Cathei.PinInject.Internal;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Cathei.PinInject
 {
     public static partial class Pin
     {
+        private static readonly List<GameObject> _sceneRootObjects = new List<GameObject>();
+        private static readonly List<ISceneInjectContext> _sceneContexts = new List<ISceneInjectContext>();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        public static void Reset()
+        {
+            _rootContainer.Reset();
+            _sceneContainers.Clear();
+
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneLoaded += OnSceneLoaded;
+
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+        }
+
+        public delegate GameObject InstantiatorDelegate(GameObject prefab, Transform parent);
+
         public static GameObject Instantiate(
-            GameObject prefab, Transform parent = null,
-            Func<GameObject, Transform, GameObject> instantiator = null)
+            GameObject prefab, Transform parent = null, InstantiatorDelegate instantiator = null)
         {
             instantiator ??= DefaultInstantiator;
             return InstantiateInternal(prefab, parent, instantiator);
         }
 
-        public static T Instantiate<T>(T prefab, Transform parent = null)
-            where T : Component
+        public static T Instantiate<T>(
+            T prefab, Transform parent = null, InstantiatorDelegate instantiator = null) where T : Component
         {
-            return InstantiateInternal(prefab.gameObject, parent, DefaultInstantiator).GetComponent<T>();
+            instantiator ??= DefaultInstantiator;
+            return InstantiateInternal(prefab.gameObject, parent, instantiator).GetComponent<T>();
         }
 
         public static void Inject(GameObject obj)
         {
-            InjectInternal(obj);
+            _injectStrategy.Inject(obj, null);
+        }
+
+        public static void Inject<T>(T obj)
+            where T : Component
+        {
+            _injectStrategy.Inject(obj.gameObject, null);
         }
 
         private static GameObject DefaultInstantiator(GameObject prefab, Transform parent)
@@ -33,7 +58,7 @@ namespace Cathei.PinInject
         }
 
         private static GameObject InstantiateInternal(
-            GameObject prefab, Transform parent, Func<GameObject, Transform, GameObject> instantiator)
+            GameObject prefab, Transform parent, InstantiatorDelegate instantiator)
         {
             bool savedActiveSelf = prefab.activeSelf;
 
@@ -43,11 +68,11 @@ namespace Cathei.PinInject
                 prefab.SetActive(false);
 
                 // prefab cached components
-                InjectCacheComponent.CacheReferences(prefab);
+                _injectStrategy.CacheInnerReferences(prefab);
 
                 var instance = instantiator(prefab, parent);
 
-                InjectInternal(instance);
+                _injectStrategy.Inject(instance, null);
 
                 instance.SetActive(savedActiveSelf);
 
@@ -59,16 +84,53 @@ namespace Cathei.PinInject
             }
         }
 
-        private static void InjectInternal(GameObject instance)
+        internal static InjectContainer GetSceneContainer(Scene scene)
         {
-            // instance cached components
-            var cache = InjectCacheComponent.CacheReferences(instance);
+            if (scene == null)
+                return _rootContainer;
 
-            // find parent context
-            var container = InjectContainerComponent.FindParentContainer(instance.transform);
+            if (!_sceneContainers.TryGetValue(scene, out var container))
+                throw new InjectException("Scene is not loaded");
 
-            cache.InjectComponents(container);
+            return container;
+        }
+
+        private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            var container = new InjectContainer();
+            container.SetParent(_rootContainer);
+
+            scene.GetRootGameObjects(_sceneRootObjects);
+
+            // register all ISceneInjectContext
+            for (int i = 0; i < _sceneRootObjects.Count; ++i)
+            {
+                var rootObject = _sceneRootObjects[i];
+
+                rootObject.GetComponentsInChildren(true, _sceneContexts);
+
+                for (int j = 0; j < _sceneContexts.Count; ++j)
+                {
+                    var context = _sceneContexts[j];
+                    context.Configure(container);
+                }
+            }
+
+            // register scene container
+            _sceneContainers.Add(scene, container);
+
+            // inject all game objects
+            for (int i = 0; i < _sceneRootObjects.Count; ++i)
+            {
+                var rootObject = _sceneRootObjects[i];
+
+                Pin.Inject(rootObject);
+            }
+        }
+
+        private static void OnSceneUnloaded(Scene scene)
+        {
+            _sceneContainers.Remove(scene);
         }
     }
-    
 }

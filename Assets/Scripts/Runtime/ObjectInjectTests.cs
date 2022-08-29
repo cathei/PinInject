@@ -54,7 +54,7 @@ public class ObjectInjectTests
     [SetUp]
     public void Setup()
     {
-        Pin.Initialize();
+        Pin.Reset();
         Pin.AddGlobalContext<GlboalInjectContext>();
     }
 
