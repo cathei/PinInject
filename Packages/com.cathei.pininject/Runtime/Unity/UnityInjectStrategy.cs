@@ -16,20 +16,17 @@ namespace Cathei.PinInject.Internal
         {
             if (obj is GameObject go)
             {
-                if (container != null)
-                    throw new ArgumentException("Explicit container is not supported for GameObject injection");
-
-                InjectGameObject(go);
+                InjectGameObject(go, container);
                 return;
             }
 
             _defaultStrategy.Inject(obj, container);
         }
 
-        private void InjectGameObject(GameObject gameObject)
+        private void InjectGameObject(GameObject gameObject, InjectContainer baseContainer)
         {
             var cacheComponent = CacheInnerReferences(gameObject);
-            var baseContainer = FindParentContainer(gameObject.transform);
+            baseContainer = FindParentContainer(gameObject.transform) ?? baseContainer;
 
             foreach (var reference in cacheComponent.InnerReferences)
             {
@@ -173,9 +170,6 @@ namespace Cathei.PinInject.Internal
 
                 parent = parent.parent;
             }
-
-            if (parentContainer == null)
-                parentContainer = Pin.GetSceneContainer(transform.gameObject.scene);
 
             return parentContainer;
         }

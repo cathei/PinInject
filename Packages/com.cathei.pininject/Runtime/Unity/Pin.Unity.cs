@@ -43,13 +43,13 @@ namespace Cathei.PinInject
 
         public static void Inject(GameObject obj)
         {
-            _injectStrategy.Inject(obj, null);
+            _injectStrategy.Inject(obj, GetSceneContainer(obj.scene));
         }
 
-        public static void Inject<T>(T obj)
-            where T : Component
+        public static void Inject<TComponent>(TComponent obj)
+            where TComponent : Component
         {
-            _injectStrategy.Inject(obj.gameObject, null);
+            Inject(obj.gameObject);
         }
 
         private static GameObject DefaultInstantiator(GameObject prefab, Transform parent)

@@ -15,9 +15,9 @@ namespace Cathei.PinInject
 
         private static readonly UnityInjectStrategy _injectStrategy = new UnityInjectStrategy();
 
-        public static void AddGlobalContext<T>() where T : IInjectContext, new()
+        public static void AddGlobalContext<TContext>() where TContext : IInjectContext, new()
         {
-            new T().Configure(_rootContainer);
+            new TContext().Configure(_rootContainer);
         }
 
         public static void AddGlobalContext(IInjectContext context)
@@ -25,7 +25,7 @@ namespace Cathei.PinInject
             context.Configure(_rootContainer);
         }
 
-        public static void Inject<T>(T obj, InjectContainer container = null) where T : class
+        public static void Inject<TObject>(TObject obj, InjectContainer container = null) where TObject : class
         {
             container ??= _rootContainer;
             _injectStrategy.Inject(obj, container);
