@@ -45,8 +45,7 @@ namespace Cathei.PinInject.Internal
                         throw new InjectException($"Property {prop.Name} is marked as [Inject] without setter");
 
                     _injectables ??= new List<InjectableProperty>();
-                    _injectables.Add(new InjectableProperty((obj, container) =>
-                        prop.SetValue(obj, container.Resolve(prop.PropertyType, injectAttr.Id))));
+                    _injectables.Add(new InjectableProperty(prop.PropertyType, injectAttr.Id, prop.SetValue));
                 }
 
                 if (resolveAttr != null)
@@ -55,8 +54,7 @@ namespace Cathei.PinInject.Internal
                         throw new InjectException($"Property {prop.Name} is marked as [Resolve] without getter");
 
                     _resolvables ??= new List<ResolvableProperty>();
-                    _resolvables.Add(new ResolvableProperty((obj, container) =>
-                        Get(prop.PropertyType).InjectInternal(prop.GetValue(obj), container)));
+                    _resolvables.Add(new ResolvableProperty(prop.PropertyType, prop.GetValue));
                 }
             }
 
@@ -68,15 +66,13 @@ namespace Cathei.PinInject.Internal
                 if (injectAttr != null)
                 {
                     _injectables ??= new List<InjectableProperty>();
-                    _injectables.Add(new InjectableProperty((obj, container) =>
-                        field.SetValue(obj, container.Resolve(field.FieldType, injectAttr.Id))));
+                    _injectables.Add(new InjectableProperty(field.FieldType, injectAttr.Id, field.SetValue));
                 }
 
                 if (resolveAttr != null)
                 {
                     _resolvables ??= new List<ResolvableProperty>();
-                    _resolvables.Add(new ResolvableProperty((obj, container) =>
-                        Get(field.FieldType).InjectInternal(field.GetValue(obj), container)));
+                    _resolvables.Add(new ResolvableProperty(field.FieldType, field.GetValue));
                 }
             }
         }
@@ -127,23 +123,44 @@ namespace Cathei.PinInject.Internal
                 postInjectHandler.PostInject();
         }
 
-        public struct InjectableProperty
+        private struct InjectableProperty
         {
-            public readonly Action<object, InjectContainer> Inject;
+            public readonly Type Type;
+            public readonly string Id;
+            public readonly Action<object, object> Setter;
 
-            public InjectableProperty(Action<object, InjectContainer> inject)
+            public InjectableProperty(Type type, string id, Action<object, object> setter)
             {
-                Inject = inject;
+                Type = type;
+                Id = id;
+                Setter = setter;
+            }
+
+            public void Inject(object obj, InjectContainer container)
+            {
+                Setter(obj, container.Resolve(Type, Id));
             }
         }
 
-        public struct ResolvableProperty
+        private struct ResolvableProperty
         {
-            public readonly Action<object, InjectContainer> Resolve;
+            public readonly Type Type;
+            public readonly Func<object, object> Getter;
 
-            public ResolvableProperty(Action<object, InjectContainer> resolve)
+            public ResolvableProperty(Type type, Func<object, object> getter)
             {
-                Resolve = resolve;
+                Type = type;
+                Getter = getter;
+            }
+
+            public void Resolve(object obj, InjectContainer container)
+            {
+                object value = Getter(obj);
+
+                if (value == null)
+                    return;
+
+                Get(Type).InjectInternal(value, container);
             }
         }
     }
