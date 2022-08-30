@@ -92,6 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aab23a2ad9b504e7e892c5fdf696bff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  internalRef: {fileID: 0}
 --- !u!1 &8749387538922973273
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,6 +183,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aab23a2ad9b504e7e892c5fdf696bff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  internalRef: {fileID: 0}
 --- !u!1 &8749387539778179879
 GameObject:
   m_ObjectHideFlags: 0
@@ -198,7 +200,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8749387539778179878
 Transform:
   m_ObjectHideFlags: 0
@@ -225,3 +227,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aab23a2ad9b504e7e892c5fdf696bff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  internalRef: {fileID: 0}

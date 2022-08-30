@@ -10,10 +10,10 @@ public class ObjectInjectTests
 {
     public class GlboalInjectContext : IInjectContext
     {
-        public void Configure(InjectContainer container)
+        public void Configure(IInjectBinder binder)
         {
-            container.Bind<IBindWithInterface>(new BindWithInterface(8));
-            container.Bind(new BindWithNew());
+            binder.Bind<IBindWithInterface>(new BindWithInterface(8));
+            binder.Bind(new BindWithNew());
         }
     }
 
@@ -45,9 +45,9 @@ public class ObjectInjectTests
             Nested = nested;
         }
 
-        public void Configure(InjectContainer container)
+        public void Configure(IInjectBinder binder)
         {
-            container.Bind(_value);
+            binder.Bind(_value);
         }
     }
 

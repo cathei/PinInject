@@ -12,7 +12,7 @@ namespace Cathei.PinInject.Internal
         // unity itself is single-threaded so we can just use single temp variable
         private readonly List<MonoBehaviour> _tempComponents = new List<MonoBehaviour>();
 
-        public void Inject(object obj, InjectContainer container)
+        public void Inject(object obj, IInjectContainer container)
         {
             if (obj is GameObject go)
             {
@@ -23,14 +23,15 @@ namespace Cathei.PinInject.Internal
             _defaultStrategy.Inject(obj, container);
         }
 
-        private void InjectGameObject(GameObject gameObject, InjectContainer baseContainer)
+        private void InjectGameObject(GameObject gameObject, IInjectContainer baseContainer)
         {
             var cacheComponent = CacheInnerReferences(gameObject);
             baseContainer = FindParentContainer(gameObject.transform) ?? baseContainer;
 
             foreach (var reference in cacheComponent.InnerReferences)
             {
-                InjectContainer container = reference.container?._container;
+                InjectContainerImpl containerImpl = reference.container?._container;
+                IInjectContainer container = containerImpl;
 
                 if (container != null)
                 {
@@ -38,8 +39,8 @@ namespace Cathei.PinInject.Internal
                     {
                         var parent = reference.container.parent?._container ?? baseContainer;
 
-                        container.Reset();
-                        container.SetParent(parent);
+                        containerImpl.Reset();
+                        containerImpl.SetParent(parent);
                     }
                 }
                 else
@@ -52,7 +53,7 @@ namespace Cathei.PinInject.Internal
                 _defaultStrategy.InjectProperties(cache, reference.component, container);
 
                 if (reference.component is IInjectContext context)
-                    context.Configure(container);
+                    context.Configure(containerImpl);
 
                 _defaultStrategy.ResolveProperties(cache, reference.component, container);
 
@@ -93,9 +94,8 @@ namespace Cathei.PinInject.Internal
             if (target.GetComponent<IInjectContext>() != null)
             {
                 // child container will be used for this game object
-                var childContainer = GetContainerComponent(target.gameObject);
-                childContainer.parent = parentContainer;
-                container = childContainer;
+                container = GetContainerComponent(target.gameObject);
+                container.parent = parentContainer;
 
                 // container referencing itself
                 cache.InnerReferences.Add(new InjectCacheComponent.InnerPrefabReferences
@@ -152,11 +152,11 @@ namespace Cathei.PinInject.Internal
             return component;
         }
 
-        private InjectContainer FindParentContainer(Transform transform)
+        private InjectContainerImpl FindParentContainer(Transform transform)
         {
-            InjectContainer parentContainer = null;
+            InjectContainerImpl parentContainer = null;
 
-            Transform parent = transform;
+            Transform parent = transform.parent;
 
             while (parent != null)
             {

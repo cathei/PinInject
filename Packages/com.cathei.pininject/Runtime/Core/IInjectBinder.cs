@@ -4,8 +4,9 @@ using UnityEngine;
 
 namespace Cathei.PinInject
 {
-    public interface IInjectContext
+    public interface IInjectBinder
     {
-        void Configure(IInjectBinder binder);
+        void Bind<T>(T instance);
+        void Bind<T>(string name, T instance);
     }
 }

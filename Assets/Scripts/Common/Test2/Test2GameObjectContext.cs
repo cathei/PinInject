@@ -9,10 +9,10 @@ public class Test2GameObjectContext : MonoBehaviour, IInjectContext
     public int health;
     public Transform internalReference;
 
-    public void Configure(InjectContainer container)
+    public void Configure(IInjectBinder binder)
     {
-        container.Bind("Power", power);
-        container.Bind("Health", health);
-        container.Bind(internalReference);
+        binder.Bind("Power", power);
+        binder.Bind("Health", health);
+        binder.Bind(internalReference);
     }
 }

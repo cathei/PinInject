@@ -10,10 +10,10 @@ public class GlobalInjectTests
 {
     public class GlboalInjectContext : IInjectContext
     {
-        public void Configure(InjectContainer container)
+        public void Configure(IInjectBinder binder)
         {
-            container.Bind<IBindWithInterface>(new BindWithInterface(1));
-            container.Bind(new BindWithNew());
+            binder.Bind<IBindWithInterface>(new BindWithInterface(1));
+            binder.Bind(new BindWithNew());
         }
     }
 

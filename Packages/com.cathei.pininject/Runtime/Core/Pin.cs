@@ -9,9 +9,9 @@ namespace Cathei.PinInject
 {
     public static partial class Pin
     {
-        private static readonly InjectContainer _rootContainer = new InjectContainer();
+        private static readonly InjectContainerImpl _rootContainer = new InjectContainerImpl();
 
-        private static readonly Dictionary<Scene, InjectContainer> _sceneContainers = new Dictionary<Scene, InjectContainer>();
+        private static readonly Dictionary<Scene, InjectContainerImpl> _sceneContainers = new Dictionary<Scene, InjectContainerImpl>();
 
         private static readonly UnityInjectStrategy _injectStrategy = new UnityInjectStrategy();
 
@@ -25,7 +25,7 @@ namespace Cathei.PinInject
             context.Configure(_rootContainer);
         }
 
-        public static void Inject<TObject>(TObject obj, InjectContainer container = null) where TObject : class
+        public static void Inject<TObject>(TObject obj, IInjectContainer container = null) where TObject : class
         {
             container ??= _rootContainer;
             _injectStrategy.Inject(obj, container);

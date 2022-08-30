@@ -8,18 +8,15 @@ namespace Cathei.PinInject.Internal
     {
         private static readonly HashSet<object> _recursiveCheck = new HashSet<object>();
 
-        public void Inject(object obj, InjectContainer container)
+        public void Inject(object obj, IInjectContainer container)
         {
             // entry point of injection
             _recursiveCheck.Clear();
 
             InjectInternal(obj, container);
-
-            // var cache = ReflectionCache.Get(obj.GetType());
-            // cache.Inject(obj, container);
         }
 
-        private void InjectInternal(object obj, InjectContainer container)
+        private void InjectInternal(object obj, IInjectContainer baseContainer)
         {
             if (_recursiveCheck.Contains(obj))
                 throw new InjectException($"Circular dependency injection on {obj.GetType()} {obj}");
@@ -29,18 +26,23 @@ namespace Cathei.PinInject.Internal
             var reflection = ReflectionCache.Get(obj.GetType());
             var context = obj as IInjectContext;
 
+            IInjectContainer container = baseContainer;
+            IInjectBinder binder = null;
+
             // another depth of injection
             if (context != null)
             {
-                var childContainer = new InjectContainer();
-                childContainer.SetParent(container);
+                var childContainer = new InjectContainerImpl();
+                childContainer.SetParent(baseContainer);
+
                 container = childContainer;
+                binder = childContainer;
             }
 
             InjectProperties(reflection, obj, container);
 
             if (context != null)
-                context.Configure(container);
+                context.Configure(binder);
 
             ResolveProperties(reflection, obj, container);
 
@@ -48,7 +50,7 @@ namespace Cathei.PinInject.Internal
                 postInjectHandler.PostInject();
         }
 
-        public void InjectProperties(ReflectionCache reflection, object obj, InjectContainer container)
+        public void InjectProperties(ReflectionCache reflection, object obj, IInjectContainer container)
         {
             if (reflection.Injectables == null)
                 return;
@@ -57,7 +59,7 @@ namespace Cathei.PinInject.Internal
                 injectable.Setter(obj, container.Resolve(injectable.Type, injectable.Id));
         }
 
-        public void ResolveProperties(ReflectionCache reflection, object obj, InjectContainer container)
+        public void ResolveProperties(ReflectionCache reflection, object obj, IInjectContainer container)
         {
             if (reflection.Resolvables == null)
                 return;

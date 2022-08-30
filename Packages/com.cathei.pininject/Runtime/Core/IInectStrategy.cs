@@ -6,6 +6,6 @@ namespace Cathei.PinInject.Internal
 {
     public interface IInjectStrategy
     {
-        void Inject(object obj, InjectContainer container);
+        void Inject(object obj, IInjectContainer container);
     }
 }

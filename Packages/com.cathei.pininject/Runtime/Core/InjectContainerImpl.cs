@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Cathei.PinInject
+namespace Cathei.PinInject.Internal
 {
-    public class InjectContainer
+    public class InjectContainerImpl : IInjectContainer, IInjectBinder
     {
         // type -> constructor
         // public Dictionary<Type, Func<object>> _builders = new Dictionary<Type, Func<object>>();
@@ -13,9 +13,9 @@ namespace Cathei.PinInject
         public Dictionary<(Type, string), object> _instances = new Dictionary<(Type, string), object>();
 
         // direct parent to current container
-        private InjectContainer _parent;
+        private IInjectContainer _parent;
 
-        internal void SetParent(InjectContainer parent)
+        internal void SetParent(IInjectContainer parent)
         {
             _parent = parent;
         }
@@ -27,10 +27,10 @@ namespace Cathei.PinInject
             _instances.Clear();
 
             // container itself is always binded
-            _instances.Add((typeof(InjectContainer), null), this);
+            Bind<IInjectContainer>(this);
         }
 
-        internal object Resolve(Type type, string id)
+        public object Resolve(Type type, string id)
         {
             if (_instances.TryGetValue((type, id), out var instance))
                 return instance;

@@ -23,12 +23,18 @@ namespace Cathei.PinInject.Internal
         public List<InnerPrefabReferences> InnerReferences => _innerReferences;
 
         [SerializeField]
-        private bool _isValid = false;
+        private int _resetCount = -1;
 
         public bool IsValid
         {
-            get => _isValid;
-            set => _isValid = value;
+            get => _resetCount == Pin._resetCount;
+            set
+            {
+                if (value)
+                    _resetCount = Pin._resetCount;
+                else
+                    _resetCount = -1;
+            }
         }
     }
 }

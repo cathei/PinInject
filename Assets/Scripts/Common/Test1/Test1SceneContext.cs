@@ -7,10 +7,10 @@ public class Test1SceneContext : MonoBehaviour, ISceneInjectContext
 {
     public Test1SceneObject sceneObject;
 
-    public void Configure(InjectContainer container)
+    public void Configure(IInjectBinder binder)
     {
-        container.Bind<IBindWithInterface>(new BindWithInterface(99));
-        container.Bind(new BindWithNew("TestScene1"));
-        container.Bind(sceneObject);
+        binder.Bind<IBindWithInterface>(new BindWithInterface(99));
+        binder.Bind(new BindWithNew("TestScene1"));
+        binder.Bind(sceneObject);
     }
 }

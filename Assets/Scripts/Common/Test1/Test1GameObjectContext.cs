@@ -7,8 +7,8 @@ public class Test1GameObjectContext : MonoBehaviour, IInjectContext
 {
     public int value;
 
-    public void Configure(InjectContainer container)
+    public void Configure(IInjectBinder binder)
     {
-        container.Bind<IBindWithInterface>(new BindWithInterface(value));
+        binder.Bind<IBindWithInterface>(new BindWithInterface(value));
     }
 }

@@ -12,9 +12,14 @@ namespace Cathei.PinInject
         private static readonly List<GameObject> _sceneRootObjects = new List<GameObject>();
         private static readonly List<ISceneInjectContext> _sceneContexts = new List<ISceneInjectContext>();
 
+        internal static int _resetCount = 0;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         public static void Reset()
         {
+            // for editor check
+            _resetCount++;
+
             _rootContainer.Reset();
             _sceneContainers.Clear();
 
@@ -72,7 +77,7 @@ namespace Cathei.PinInject
 
                 var instance = instantiator(prefab, parent);
 
-                _injectStrategy.Inject(instance, null);
+                Inject(instance);
 
                 instance.SetActive(savedActiveSelf);
 
@@ -84,7 +89,7 @@ namespace Cathei.PinInject
             }
         }
 
-        internal static InjectContainer GetSceneContainer(Scene scene)
+        internal static InjectContainerImpl GetSceneContainer(Scene scene)
         {
             if (scene == null)
                 return _rootContainer;
@@ -97,7 +102,7 @@ namespace Cathei.PinInject
 
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            var container = new InjectContainer();
+            var container = new InjectContainerImpl();
             container.SetParent(_rootContainer);
 
             scene.GetRootGameObjects(_sceneRootObjects);

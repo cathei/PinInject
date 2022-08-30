@@ -1,11 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cathei.PinInject
 {
-    public interface IInjectContext
+    public interface IInjectContainer
     {
-        void Configure(IInjectBinder binder);
+        object Resolve(Type type, string id);
     }
 }

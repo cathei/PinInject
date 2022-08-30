@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class Test2SceneContext : MonoBehaviour, ISceneInjectContext
 {
-    public void Configure(InjectContainer container)
+    public void Configure(IInjectBinder binder)
     {
-        container.Bind<IBindWithInterface>(new BindWithInterface(1024));
-        container.Bind(new BindWithNew("TestScene2"));
+        binder.Bind<IBindWithInterface>(new BindWithInterface(1024));
+        binder.Bind(new BindWithNew("TestScene2"));
     }
 }
