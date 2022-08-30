@@ -12,6 +12,8 @@ namespace Cathei.PinInject.Internal
         // unity itself is single-threaded so we can just use single temp variable
         private readonly List<MonoBehaviour> _tempComponents = new List<MonoBehaviour>();
 
+        private const HideFlags hiddenComponentFlags = HideFlags.HideAndDontSave | HideFlags.HideInInspector;
+
         public void Inject(object obj, IInjectContainer container)
         {
             if (obj is GameObject go)
@@ -72,7 +74,7 @@ namespace Cathei.PinInject.Internal
             if (component == null)
             {
                 component = gameObject.AddComponent<InjectCacheComponent>();
-                component.hideFlags = HideFlags.HideAndDontSave;
+                component.hideFlags = hiddenComponentFlags;
             }
 
             if (!component.IsValid)
@@ -146,7 +148,7 @@ namespace Cathei.PinInject.Internal
             if (component == null)
             {
                 component = gameObject.AddComponent<InjectContainerComponent>();
-                component.hideFlags = HideFlags.HideAndDontSave;
+                component.hideFlags = hiddenComponentFlags;
             }
 
             return component;
