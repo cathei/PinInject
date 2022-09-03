@@ -1,0 +1,3 @@
+[submodule "Packages/com.cathei.pininject"]
+	path = Packages/com.cathei.pininject
+	url = https://github.com/cathei/PinInject
