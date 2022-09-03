@@ -40,9 +40,25 @@ namespace Cathei.PinInject
             SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
 
-        public struct InstantiationParams
+        internal struct PositionArgs
         {
-            public GameObject prefab;
+            public Vector3 position;
+            public Quaternion rotation;
+            public bool worldSpace;
+
+            public void Apply(Transform transform)
+            {
+                if (worldSpace)
+                {
+                    transform.position = position;
+                    transform.rotation = rotation;
+                }
+                else
+                {
+                    transform.localPosition = position;
+                    transform.localRotation = rotation;
+                }
+            }
         }
 
         public delegate GameObject InstantiatorDelegate(GameObject prefab, Transform parent);
@@ -51,14 +67,39 @@ namespace Cathei.PinInject
             GameObject prefab, Transform parent = null, InstantiatorDelegate instantiator = null)
         {
             instantiator ??= DefaultInstantiator;
-            return InstantiateInternal(prefab, parent, instantiator);
+
+            return InstantiateInternal(prefab, parent, new PositionArgs
+            {
+                position = prefab.transform.position,
+                rotation = prefab.transform.rotation,
+                worldSpace = false
+            }, instantiator);
+        }
+
+        public static GameObject Instantiate(
+            GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true, InstantiatorDelegate instantiator = null)
+        {
+            instantiator ??= DefaultInstantiator;
+
+            return InstantiateInternal(prefab, parent, new PositionArgs
+            {
+                position = position,
+                rotation = rotation,
+                worldSpace = worldSpace
+            }, instantiator);
         }
 
         public static T Instantiate<T>(
             T prefab, Transform parent = null, InstantiatorDelegate instantiator = null) where T : Component
         {
-            instantiator ??= DefaultInstantiator;
-            return InstantiateInternal(prefab.gameObject, parent, instantiator).GetComponent<T>();
+            return Instantiate(prefab.gameObject, parent, instantiator).GetComponent<T>();
+        }
+
+        public static T Instantiate<T>(
+            T prefab, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true, InstantiatorDelegate instantiator = null)
+            where T : Component
+        {
+            return Instantiate(prefab.gameObject, position, rotation, parent, worldSpace, instantiator).GetComponent<T>();
         }
 
         public static void Inject(GameObject obj)
@@ -72,13 +113,13 @@ namespace Cathei.PinInject
             Inject(obj.gameObject);
         }
 
-        private static GameObject DefaultInstantiator(GameObject prefab, Transform parent)
+        internal static GameObject DefaultInstantiator(GameObject prefab, Transform parent)
         {
             return GameObject.Instantiate(prefab, parent);
         }
 
         private static GameObject InstantiateInternal(
-            GameObject prefab, Transform parent, InstantiatorDelegate instantiator)
+            GameObject prefab, Transform parent, PositionArgs args, InstantiatorDelegate instantiator)
         {
             bool savedActiveSelf = prefab.activeSelf;
 
@@ -91,6 +132,8 @@ namespace Cathei.PinInject
                 _injectStrategy.CacheInnerReferences(prefab);
 
                 var instance = instantiator(prefab, parent);
+
+                args.Apply(instance.transform);
 
                 Inject(instance);
 

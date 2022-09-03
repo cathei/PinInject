@@ -9,79 +9,111 @@ namespace Cathei.PinInject
     /// <summary>
     /// game object pool that injects on instantiation
     /// </summary>
-    public class InjectObjectPool<T> where T : UnityEngine.Object, new()
+    public class InjectObjectPool
     {
-        private class PoolImpl : GenericObjectPool<T>
+        private class PoolImpl : GenericObjectPool<GameObject>
         {
-            private readonly GameObject _root;
-            private readonly T _prefab;
+            internal readonly Transform _root;
+            internal readonly GameObject _prefab;
+            internal readonly Pin.InstantiatorDelegate _instantiator;
 
-            public PoolImpl(GameObject root, T prefab, int minInstance, int maxInstance)
+            public PoolImpl(Transform root, GameObject prefab, int minInstance, int maxInstance, Pin.InstantiatorDelegate instantiator)
                 : base(minInstance, maxInstance)
             {
                 _root = root;
                 _prefab = prefab;
+                _instantiator = instantiator;
 
-                _root.SetActive(false);
+                _root.gameObject.SetActive(false);
             }
 
-            protected override T CreateInstance()
+            protected override GameObject CreateInstance()
             {
-                return UnityEngine.Object.Instantiate(_prefab, _root.transform);
+                return _instantiator(_prefab, _root.transform);
             }
 
-            protected override void ResetInstance(T instance)
+            protected override void ResetInstance(GameObject instance)
             {
-                if (instance is Component component)
-                    component.transform.SetParent(_root.transform);
-                else if (instance is GameObject gameObject)
-                    gameObject.transform.SetParent(_root.transform);
+                instance.transform.SetParent(_root.transform);
             }
 
-            protected override void DisposeInstance(T instance)
+            protected override void DisposeInstance(GameObject instance)
             {
-                if (instance is Component component)
-                    UnityEngine.Object.Destroy(component.gameObject);
-                else
-                    UnityEngine.Object.Destroy(instance);
+                UnityEngine.Object.Destroy(instance);
             }
         }
 
-        private readonly GenericObjectPool<T> _poolImpl;
+        private readonly PoolImpl _poolImpl;
 
-        public InjectObjectPool(GameObject root, T prefab, int minInstance = 0, int maxInstance = 100)
+        public InjectObjectPool(Transform root, GameObject prefab, int minInstance = 0, int maxInstance = 100, Pin.InstantiatorDelegate instantiator = null)
         {
-            _poolImpl = new PoolImpl(root, prefab, minInstance, maxInstance);
+            instantiator ??= Pin.DefaultInstantiator;
+            _poolImpl = new PoolImpl(root, prefab, minInstance, maxInstance, instantiator);
         }
 
-        public T Instantiate(Transform parent, Vector3 position, Quaternion rotation)
+        public GameObject Instantiate(Transform parent)
+        {
+            return InstantiateInternal(parent, new Pin.PositionArgs
+            {
+                position = _poolImpl._prefab.transform.position,
+                rotation = _poolImpl._prefab.transform.rotation,
+                worldSpace = false
+            });
+        }
+
+        public GameObject Instantiate(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true)
+        {
+            return InstantiateInternal(parent, new Pin.PositionArgs
+            {
+                position = position,
+                rotation = rotation,
+                worldSpace = worldSpace
+            });
+        }
+
+        private GameObject InstantiateInternal(Transform parent, Pin.PositionArgs args)
         {
             var instance = _poolImpl.Get();
 
-            GameObject gameObject;
+            instance.SetActive(false);
 
-            if (instance is Component component)
-                gameObject = component.gameObject;
-            else if (instance is GameObject go)
-                gameObject = go;
-            else
-                throw new InvalidOperationException("Type must be Component or GameObject");
+            instance.transform.SetParent(parent);
 
-            gameObject.SetActive(false);
+            args.Apply(instance.transform);
 
-            gameObject.transform.SetParent(parent);
+            Pin.Inject(instance);
 
-            UnityEngine.Object.Instantiate(gameObject, parent);
-
-            Pin.Inject(gameObject);
-
-            gameObject.SetActive(true);
+            instance.SetActive(true);
             return instance;
+        }
+
+        public void Destroy(GameObject instance)
+        {
+            _poolImpl.Release(instance);
+        }
+    }
+
+    public class InjectObjectPool<T> : InjectObjectPool where T : Component
+    {
+        public InjectObjectPool(Transform root, T prefab, int minInstance = 0, int maxInstance = 100)
+            : base(root, prefab.gameObject, minInstance, maxInstance)
+        { }
+
+        public new T Instantiate(Transform parent)
+        {
+            var instance = base.Instantiate(parent);
+            return instance.GetComponent<T>();
+        }
+
+        public new T Instantiate(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true)
+        {
+            var instance = base.Instantiate(position, rotation, parent, worldSpace);
+            return instance.GetComponent<T>();
         }
 
         public void Destroy(T instance)
         {
-            _poolImpl.Release(instance);
+            Destroy(instance.gameObject);
         }
     }
 }
