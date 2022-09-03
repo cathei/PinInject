@@ -108,3 +108,6 @@ There is `InjectCollection` and `InjectKeyedCollection`. These collections will 
 
 > **Warning**  
 > These collections should not contain `GameObject` or `Component`.
+
+## Using Object Pools
+PinInject includes `GenericObjectPool` for C# objects, and `InjectObjectPool` for GameObjects. `InjectObjectPool` automatically injects when you call `Spawn`.

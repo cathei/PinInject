@@ -51,9 +51,9 @@ namespace Cathei.PinInject
             _poolImpl = new PoolImpl(root, prefab, minInstance, maxInstance, instantiator);
         }
 
-        public GameObject Instantiate(Transform parent)
+        public GameObject Spawn(Transform parent)
         {
-            return InstantiateInternal(parent, new Pin.PositionArgs
+            return SpawnInternal(parent, new Pin.PositionArgs
             {
                 position = _poolImpl._prefab.transform.position,
                 rotation = _poolImpl._prefab.transform.rotation,
@@ -61,9 +61,9 @@ namespace Cathei.PinInject
             });
         }
 
-        public GameObject Instantiate(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true)
+        public GameObject Spawn(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true)
         {
-            return InstantiateInternal(parent, new Pin.PositionArgs
+            return SpawnInternal(parent, new Pin.PositionArgs
             {
                 position = position,
                 rotation = rotation,
@@ -71,7 +71,7 @@ namespace Cathei.PinInject
             });
         }
 
-        private GameObject InstantiateInternal(Transform parent, Pin.PositionArgs args)
+        private GameObject SpawnInternal(Transform parent, Pin.PositionArgs args)
         {
             var instance = _poolImpl.Get();
 
@@ -87,7 +87,7 @@ namespace Cathei.PinInject
             return instance;
         }
 
-        public void Destroy(GameObject instance)
+        public void Despawn(GameObject instance)
         {
             _poolImpl.Release(instance);
         }
@@ -99,21 +99,21 @@ namespace Cathei.PinInject
             : base(root, prefab.gameObject, minInstance, maxInstance)
         { }
 
-        public new T Instantiate(Transform parent)
+        public new T Spawn(Transform parent)
         {
-            var instance = base.Instantiate(parent);
+            var instance = base.Spawn(parent);
             return instance.GetComponent<T>();
         }
 
-        public new T Instantiate(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true)
+        public new T Spawn(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true)
         {
-            var instance = base.Instantiate(position, rotation, parent, worldSpace);
+            var instance = base.Spawn(position, rotation, parent, worldSpace);
             return instance.GetComponent<T>();
         }
 
-        public void Destroy(T instance)
+        public void Despawn(T instance)
         {
-            Destroy(instance.gameObject);
+            Despawn(instance.gameObject);
         }
     }
 }
