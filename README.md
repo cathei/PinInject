@@ -107,4 +107,4 @@ PinInject attaches small component to your prefab to cache components, so it wil
 There is `InjectCollection` and `InjectKeyedCollection`. These collections will inject to collection's member automatially when item is added to collection.
 
 > **Warning**  
-> These collections should not contain with GameObject or Component.
+> These collections should not contain `GameObject` or `Component`.
