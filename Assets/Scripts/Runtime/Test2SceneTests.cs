@@ -25,6 +25,8 @@ public class Test2SceneTests
     {
         if (!initialized)
         {
+            initialized = true;
+
             Pin.Reset();
             SceneManager.LoadScene("TestInject2", LoadSceneMode.Single);
 

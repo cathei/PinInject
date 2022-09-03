@@ -27,13 +27,25 @@ namespace Cathei.PinInject.Internal
         private readonly List<InjectableProperty> _injectables = null;
         private readonly List<ResolvableProperty> _resolvables = null;
 
+        private const BindingFlags memberBindingFlags =
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+
         internal ReflectionCache(Type type)
         {
-            var properties = type.GetProperties(
-                BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            if (type.BaseType != null)
+            {
+                // we are reflecting base class so we can get private member
+                var baseReflection = Get(type.BaseType);
 
-            var fields = type.GetFields(
-                BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                if (baseReflection._injectables != null)
+                    _injectables = new List<InjectableProperty>(baseReflection._injectables);
+
+                if (baseReflection._resolvables != null)
+                    _resolvables = new List<ResolvableProperty>(baseReflection._resolvables);
+            }
+
+            var properties = type.GetProperties(memberBindingFlags);
+            var fields = type.GetFields(memberBindingFlags);
 
             foreach (var prop in properties)
             {

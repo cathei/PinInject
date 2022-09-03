@@ -15,6 +15,11 @@ namespace Cathei.PinInject.Internal
         // direct parent to current container
         private IInjectContainer _parent;
 
+        public InjectContainerImpl()
+        {
+            Reset();
+        }
+
         internal void SetParent(IInjectContainer parent)
         {
             _parent = parent;
@@ -42,8 +47,9 @@ namespace Cathei.PinInject.Internal
             //     return instance;
             // }
 
+            // failed to resolve dependency
             if (_parent == null)
-                throw new InjectException($"Type {type} cannot be resolved");
+                return null;
 
             // tail call would be optimized
             return _parent.Resolve(type, id);

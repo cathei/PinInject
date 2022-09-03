@@ -56,7 +56,14 @@ namespace Cathei.PinInject.Internal
                 return;
 
             foreach (var injectable in reflection.Injectables)
-                injectable.Setter(obj, container.Resolve(injectable.Type, injectable.Id));
+            {
+                var value = container.Resolve(injectable.Type, injectable.Id);
+
+                if (value == null)
+                    throw new InjectException($"Type {injectable.Type} cannot be resolved");
+
+                injectable.Setter(obj, value);
+            }
         }
 
         public void ResolveProperties(ReflectionCache reflection, object obj, IInjectContainer container)
