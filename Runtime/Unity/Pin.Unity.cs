@@ -40,6 +40,11 @@ namespace Cathei.PinInject
             SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
 
+        public struct InstantiationParams
+        {
+            public GameObject prefab;
+        }
+
         public delegate GameObject InstantiatorDelegate(GameObject prefab, Transform parent);
 
         public static GameObject Instantiate(
