@@ -11,7 +11,7 @@ namespace Cathei.PinInject
     {
         private static readonly InjectContainerImpl _rootContainer = new InjectContainerImpl();
 
-        private static readonly Dictionary<Scene, InjectContainerImpl> _sceneContainers = new Dictionary<Scene, InjectContainerImpl>();
+        private static readonly Dictionary<int, InjectContainerImpl> _sceneContainers = new Dictionary<int, InjectContainerImpl>();
 
         private static readonly UnityInjectStrategy _injectStrategy = new UnityInjectStrategy();
 

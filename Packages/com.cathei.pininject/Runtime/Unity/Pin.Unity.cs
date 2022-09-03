@@ -23,6 +23,16 @@ namespace Cathei.PinInject
             _rootContainer.Reset();
             _sceneContainers.Clear();
 
+            // editor can have open scene when scene reload disabled
+            for (int i = 0; i < SceneManager.sceneCount; ++i)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+                if (!scene.isLoaded)
+                    continue;
+
+                OnSceneLoaded(scene, LoadSceneMode.Single);
+            }
+
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneLoaded += OnSceneLoaded;
 
@@ -91,10 +101,10 @@ namespace Cathei.PinInject
 
         internal static InjectContainerImpl GetSceneContainer(Scene scene)
         {
-            if (scene == null)
+            if (!scene.IsValid())
                 return _rootContainer;
 
-            if (!_sceneContainers.TryGetValue(scene, out var container))
+            if (!_sceneContainers.TryGetValue(scene.handle, out var container))
                 throw new InjectException("Scene is not loaded");
 
             return container;
@@ -122,7 +132,7 @@ namespace Cathei.PinInject
             }
 
             // register scene container
-            _sceneContainers.Add(scene, container);
+            _sceneContainers.Add(scene.handle, container);
 
             // inject all game objects
             for (int i = 0; i < _sceneRootObjects.Count; ++i)
@@ -135,7 +145,7 @@ namespace Cathei.PinInject
 
         private static void OnSceneUnloaded(Scene scene)
         {
-            _sceneContainers.Remove(scene);
+            _sceneContainers.Remove(scene.handle);
         }
     }
 }
