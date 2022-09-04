@@ -8,16 +8,18 @@ namespace Cathei.PinInject
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class InjectAttribute : PreserveAttribute
     {
-        public readonly string Id;
+        public readonly string Name;
+        public readonly bool FromMember;
 
         public InjectAttribute()
         {
-            Id = null;
+            Name = null;
         }
 
-        public InjectAttribute(string id)
+        public InjectAttribute(string name, bool fromMember = false)
         {
-            Id = id;
+            Name = name;
+            FromMember = fromMember;
         }
     }
 }

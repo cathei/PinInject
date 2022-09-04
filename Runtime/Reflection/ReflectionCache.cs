@@ -30,6 +30,9 @@ namespace Cathei.PinInject.Internal
         private const BindingFlags memberBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
+        private const BindingFlags nameBindingFlags =
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
         internal ReflectionCache(Type type)
         {
             if (type.BaseType != null)
@@ -58,7 +61,7 @@ namespace Cathei.PinInject.Internal
                         throw new InjectException($"Property {prop.Name} is marked as [Inject] without setter");
 
                     _injectables ??= new List<InjectableProperty>();
-                    _injectables.Add(new InjectableProperty(prop.PropertyType, injectAttr.Id, prop.SetValue));
+                    _injectables.Add(new InjectableProperty(prop.PropertyType, injectAttr.Name, prop.SetValue));
                 }
 
                 if (resolveAttr != null)
@@ -79,7 +82,7 @@ namespace Cathei.PinInject.Internal
                 if (injectAttr != null)
                 {
                     _injectables ??= new List<InjectableProperty>();
-                    _injectables.Add(new InjectableProperty(field.FieldType, injectAttr.Id, field.SetValue));
+                    _injectables.Add(new InjectableProperty(field.FieldType, injectAttr.Name, field.SetValue));
                 }
 
                 if (resolveAttr != null)
@@ -90,16 +93,38 @@ namespace Cathei.PinInject.Internal
             }
         }
 
+        private Func<object, string> VersionGetter(Type type, InjectAttribute attr)
+        {
+            if (attr.FromMember)
+            {
+                var field = type.GetField(attr.Name, nameBindingFlags);
+
+                if (field != null)
+                    return obj => field.GetValue(obj).ToString();
+
+                var prop = type.GetProperty(attr.Name, nameBindingFlags);
+
+                if (prop != null)
+                    return obj => prop.GetValue(obj).ToString();
+
+                throw new InjectException("Cannot find member " + attr.Name);
+            }
+            else
+            {
+                return _ => attr.Name;
+            }
+        }
+
         public struct InjectableProperty
         {
             public readonly Type Type;
-            public readonly string Id;
+            public readonly Func<object, string> IdGetter;
             public readonly Action<object, object> Setter;
 
-            public InjectableProperty(Type type, string id, Action<object, object> setter)
+            public InjectableProperty(Type type, Func<object, string> idGetter, Action<object, object> setter)
             {
                 Type = type;
-                Id = id;
+                IdGetter = idGetter;
                 Setter = setter;
             }
         }
