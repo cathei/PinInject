@@ -61,7 +61,8 @@ namespace Cathei.PinInject.Internal
                         throw new InjectException($"Property {prop.Name} is marked as [Inject] without setter");
 
                     _injectables ??= new List<InjectableProperty>();
-                    _injectables.Add(new InjectableProperty(prop.PropertyType, injectAttr.Name, prop.SetValue));
+                    _injectables.Add(new InjectableProperty(
+                        prop.PropertyType, IdGetter(type, injectAttr), prop.SetValue));
                 }
 
                 if (resolveAttr != null)
@@ -82,7 +83,8 @@ namespace Cathei.PinInject.Internal
                 if (injectAttr != null)
                 {
                     _injectables ??= new List<InjectableProperty>();
-                    _injectables.Add(new InjectableProperty(field.FieldType, injectAttr.Name, field.SetValue));
+                    _injectables.Add(new InjectableProperty(
+                        field.FieldType, IdGetter(type, injectAttr), field.SetValue));
                 }
 
                 if (resolveAttr != null)
@@ -93,7 +95,7 @@ namespace Cathei.PinInject.Internal
             }
         }
 
-        private Func<object, string> VersionGetter(Type type, InjectAttribute attr)
+        private Func<object, string> IdGetter(Type type, InjectAttribute attr)
         {
             if (attr.FromMember)
             {
