@@ -23,6 +23,13 @@ namespace Cathei.PinInject
             _rootContainer.Reset();
             _sceneContainers.Clear();
 
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        internal static void SetUpInjection()
+        {
             // editor can have open scene when scene reload disabled
             for (int i = 0; i < SceneManager.sceneCount; ++i)
             {
@@ -33,10 +40,7 @@ namespace Cathei.PinInject
                 OnSceneLoaded(scene, LoadSceneMode.Single);
             }
 
-            SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneLoaded += OnSceneLoaded;
-
-            SceneManager.sceneUnloaded -= OnSceneUnloaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
 

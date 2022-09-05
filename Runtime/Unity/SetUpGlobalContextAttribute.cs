@@ -8,6 +8,6 @@ namespace Cathei.PinInject
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class SetUpGlobalContextAttribute : RuntimeInitializeOnLoadMethodAttribute
     {
-        public SetUpGlobalContextAttribute() : base(RuntimeInitializeLoadType.BeforeSceneLoad) { }
+        public SetUpGlobalContextAttribute() : base(RuntimeInitializeLoadType.BeforeSplashScreen) { }
     }
 }

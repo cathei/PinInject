@@ -60,7 +60,7 @@ namespace Cathei.PinInject.Internal
                 var value = container.Resolve(injectable.Type, injectable.IdGetter(obj));
 
                 if (value == null)
-                    throw new InjectException($"Type {injectable.Type} cannot be resolved");
+                    throw new InjectException($"Type {injectable.Type} on {obj} cannot be resolved");
 
                 injectable.Setter(obj, value);
             }
