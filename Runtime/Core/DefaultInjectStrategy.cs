@@ -8,7 +8,7 @@ namespace Cathei.PinInject.Internal
     {
         private static readonly HashSet<object> _recursiveCheck = new HashSet<object>();
 
-        public void Inject(object obj, IInjectContainer container)
+        public virtual void Inject(object obj, IInjectContainer container)
         {
             // entry point of injection
             _recursiveCheck.Clear();

@@ -5,16 +5,14 @@ using UnityEngine;
 
 namespace Cathei.PinInject.Internal
 {
-    public class UnityInjectStrategy : IInjectStrategy
+    public class UnityInjectStrategy : DefaultInjectStrategy
     {
-        private readonly DefaultInjectStrategy _defaultStrategy = new DefaultInjectStrategy();
-
         // unity itself is single-threaded so we can just use single temp variable
         private readonly List<MonoBehaviour> _tempComponents = new List<MonoBehaviour>();
 
         private const HideFlags hiddenComponentFlags = HideFlags.HideAndDontSave | HideFlags.HideInInspector;
 
-        public void Inject(object obj, IInjectContainer container)
+        public override void Inject(object obj, IInjectContainer container)
         {
             if (obj is GameObject go)
             {
@@ -22,7 +20,7 @@ namespace Cathei.PinInject.Internal
                 return;
             }
 
-            _defaultStrategy.Inject(obj, container);
+            base.Inject(obj, container);
         }
 
         private void InjectGameObject(GameObject gameObject, IInjectContainer baseContainer)
@@ -52,12 +50,12 @@ namespace Cathei.PinInject.Internal
 
                 var cache = ReflectionCache.Get(reference.component.GetType());
 
-                _defaultStrategy.InjectProperties(cache, reference.component, container);
+                InjectProperties(cache, reference.component, container);
 
                 if (reference.component is IInjectContext context)
                     context.Configure(containerImpl);
 
-                _defaultStrategy.ResolveProperties(cache, reference.component, container);
+                ResolveProperties(cache, reference.component, container);
 
                 if (reference.component is IPostInjectHandler postInjectHandler)
                     postInjectHandler.PostInject();
@@ -91,6 +89,10 @@ namespace Cathei.PinInject.Internal
         // prefab version is recommended for performance
         private void CacheInnerReferencesInternal(InjectCacheComponent cache, Transform target, InjectContainerComponent parentContainer)
         {
+            // scene inject root should not be affected
+            if (target.GetComponent<SceneInjectRoot>())
+                return;
+
             InjectContainerComponent container = parentContainer;
 
             if (target.GetComponent<IInjectContext>() != null)
@@ -116,10 +118,6 @@ namespace Cathei.PinInject.Internal
             {
                 // it is already included
                 if (component is InjectContainerComponent)
-                    continue;
-
-                // ignore scene inject component
-                if (component is ISceneInjectContext)
                     continue;
 
                 var reflection = ReflectionCache.Get(component.GetType());

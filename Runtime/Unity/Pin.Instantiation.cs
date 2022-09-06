@@ -9,41 +9,6 @@ namespace Cathei.PinInject
 {
     public static partial class Pin
     {
-        private static readonly List<GameObject> _sceneRootObjects = new List<GameObject>();
-        private static readonly List<ISceneInjectContext> _sceneContexts = new List<ISceneInjectContext>();
-
-        internal static int _resetCount = 0;
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        public static void Reset()
-        {
-            // for editor check
-            _resetCount++;
-
-            _rootContainer.Reset();
-            _sceneContainers.Clear();
-
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-            SceneManager.sceneUnloaded -= OnSceneUnloaded;
-        }
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        internal static void SetUpInjection()
-        {
-            // editor can have open scene when scene reload disabled
-            for (int i = 0; i < SceneManager.sceneCount; ++i)
-            {
-                var scene = SceneManager.GetSceneAt(i);
-                if (!scene.isLoaded)
-                    continue;
-
-                OnSceneLoaded(scene, LoadSceneMode.Single);
-            }
-
-            SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.sceneUnloaded += OnSceneUnloaded;
-        }
-
         internal struct PositionArgs
         {
             public Vector3 position;
@@ -149,55 +114,6 @@ namespace Cathei.PinInject
             {
                 prefab.SetActive(savedActiveSelf);
             }
-        }
-
-        internal static InjectContainerImpl GetSceneContainer(Scene scene)
-        {
-            if (!scene.IsValid())
-                return _rootContainer;
-
-            if (!_sceneContainers.TryGetValue(scene.handle, out var container))
-                throw new InjectException("Scene is not loaded");
-
-            return container;
-        }
-
-        private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-        {
-            var container = new InjectContainerImpl();
-            container.SetParent(_rootContainer);
-
-            scene.GetRootGameObjects(_sceneRootObjects);
-
-            // register all ISceneInjectContext
-            for (int i = 0; i < _sceneRootObjects.Count; ++i)
-            {
-                var rootObject = _sceneRootObjects[i];
-
-                rootObject.GetComponentsInChildren(true, _sceneContexts);
-
-                for (int j = 0; j < _sceneContexts.Count; ++j)
-                {
-                    var context = _sceneContexts[j];
-                    context.Configure(container);
-                }
-            }
-
-            // register scene container
-            _sceneContainers.Add(scene.handle, container);
-
-            // inject all game objects
-            for (int i = 0; i < _sceneRootObjects.Count; ++i)
-            {
-                var rootObject = _sceneRootObjects[i];
-
-                Pin.Inject(rootObject);
-            }
-        }
-
-        private static void OnSceneUnloaded(Scene scene)
-        {
-            _sceneContainers.Remove(scene.handle);
         }
     }
 }

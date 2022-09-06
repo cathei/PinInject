@@ -32,9 +32,9 @@ namespace Cathei.PinInject.UI
 
     public static class ObservableEventSourceExtensions
     {
-        public static void Subscribe<T>(this IObservable<T> observable, IEventPublisher<T> publisher)
+        public static IDisposable Subscribe<T>(this IObservable<T> observable, IEventPublisher<T> publisher)
         {
-            observable.Subscribe(new EventPublisherObserver<T>(publisher));
+            return observable.Subscribe(new EventPublisherObserver<T>(publisher));
         }
     }
 }

@@ -5,7 +5,9 @@ Minimalistic Dependency Injection tool for Unity
 > PinInject is under development, current stage is: `Prototyping`
 
 ## Dependency Injection
-
+* https://en.wikipedia.org/wiki/Dependency_injection
+* https://www.sebaslab.com/ioc-container-unity-part-1
+* https://moderncsharpinunity.github.io/post/dependency-injection-on-unity
 
 ## Why PinInject?
 * Minimal API & complexity
@@ -111,3 +113,37 @@ There is `InjectCollection` and `InjectKeyedCollection`. These collections will 
 
 ## Using Object Pools
 PinInject includes `GenericObjectPool` for C# objects, and `InjectObjectPool` for GameObjects. `InjectObjectPool` automatically injects when you call `Spawn`.
+
+## Using UI Binding
+```cs
+public class MyContext : MonoBehaviour, IInjectContext, IPostInjectHandler
+{
+    private EventSource<string> textEvent;
+    private EventSource<object> buttonEvent;
+
+    private int buttonClickCount = 0;
+
+    public void Configure(IInjectBinder binder)
+    {
+        textEvent = new EventSource<string>();
+        buttonEvent = new EventSource<object>();
+
+        binder.BindEventSource("MyText", textEvent);
+        binder.BindEventSource("MyButton", buttonEvent);
+    }
+
+    public void PostInject()
+    {
+        buttonEvent.Listeners += HandleButtonEvent;
+    }
+
+    private void HandleButtonEvent(object obj)
+    {
+        buttonClickCount++;
+        textEvent.Publish("Button Clicked! " + buttonClickCount);
+    }
+}
+```
+First add `MyContext` to parent object of `Text` and `Button`. Add `UITextBinder` on `Text` and set identifier to `MyText`. Then add `UIButtonOnClickDispatcher` on `Button` and set identifier to `MyButton`. Now you can see `Text` changes when `Button` clicked.
+
+Have you noticed you didn't have to drag-drop anything from Unity Inspector? Using UI binding with PinInject, you can make your UI structure flexible and easily modifiable.
