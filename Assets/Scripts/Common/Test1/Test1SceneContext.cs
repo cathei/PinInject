@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Cathei.PinInject;
 using UnityEngine;
 
-public class Test1SceneContext : MonoBehaviour, ISceneInjectContext
+public class Test1SceneContext : MonoBehaviour, IInjectContext
 {
     public Test1SceneObject sceneObject;
 

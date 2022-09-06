@@ -4,7 +4,8 @@
     "references": [
         "PinInject",
         "PinInject.Tests.Common",
-        "UnityEngine.TestRunner"
+        "UnityEngine.TestRunner",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

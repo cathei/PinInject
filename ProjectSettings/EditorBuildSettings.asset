@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TestInject2.unity
     guid: 330b438d3b36045f4879ec47ffbeb93d
+  - enabled: 1
+    path: Assets/Scenes/TestInject3.unity
+    guid: 2364b73e80dfd4e9e88d2fe3b01d800a
   m_configObjects: {}
