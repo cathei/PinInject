@@ -27,7 +27,7 @@ Strange, is it? Most DI container supports lazy binding by default. But PinInjec
 You can manually pass dependencies by constructor whenever possible. PinInject is not made to call constructor instead of you. It's designed to support edge-case when it's hard to use manual dependency injection through constructor.
 
 ### PinInject **does** support static APIs
-Problem with static APIs are that you need to pass context. But in Unity, GameObject already has own context: the hierarchy. Thus, your context should be inferred from your hierarchy. All you need is to do is replace `Instantiate` to `Pin.Instantiate` then it will instantiate your GameObject with dependency injection!
+Problem with static APIs are that you need to pass context. But in Unity, GameObject already has own context: the hierarchy. Thus, your context should be inferred from your hierarchy. All you need is to do is adding `SceneInjectRoot` then replace `Instantiate` to `Pin.Instantiate`, it will magically instantiate your GameObject with dependency injection!
 
 ## Defining Context
 In PinInject, you can define `Global`, `Scene` and `GameObject` context. Let's define Global context
@@ -49,7 +49,11 @@ public class MyGlobalContext : IInjectContext
     }
 }
 ```
-`SetUpGlobalContextAttribute` is a wrapper for Unity's `RuntimeInitializeOnLoadMethodAttribute`. The Global context will be applied **any** GameObject or regular C# object that injected through PinInject. Now you can add `InjectAttribute` to your field or property to inject in your component.
+`SetUpGlobalContextAttribute` is a wrapper for Unity's `RuntimeInitializeOnLoadMethodAttribute`. The Global context will be applied **any** GameObject or regular C# object that injected through PinInject.
+
+Then add `SceneInjectRoot` to your scene. This is component that triggers injection when scene loading.
+
+Now you can add `InjectAttribute` to your field or property to inject in your component.
 
 ## Injecting into MonoBehaviour
 ```cs
@@ -62,7 +66,9 @@ public class MyComponent : MonoBehaviour
 Now you don't have to reference singleton. It will work just like how Unity inspector injects value for you.
 
 ## Defining Scene Context and GameObject Context
-You can define SceneContext through `ISceneInjectContext`. Any scene context that is on the scene will be applied. You can define GameObject context through `IInjectContext`. GameObject context will be applied to any MonoBehaviour on same transform or it's children.
+Any `IInjectContext` Component under `SceneInjectRoot` becomes Scene Context and will affect every object in that scene and instantiated to the scene.
+
+Otherwise, `IInjectContext` Component will be GameObject Context. GameObject context will be applied to any MonoBehaviour on same transform or it's children.
 
 ## Named Injection
 You can perform named injection by `Bind("name", instance)` and using same name as `[Inject("name")]`.
