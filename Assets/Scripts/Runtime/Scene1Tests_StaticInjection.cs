@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 /// Test1 scene is for testing root and hierarchical injection.
 /// </summary>
 [TestFixture]
-public class Test1SceneTests
+public class Scene1Tests_StaticInjection
 {
     private bool initialized = false;
 

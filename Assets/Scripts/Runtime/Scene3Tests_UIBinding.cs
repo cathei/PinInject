@@ -12,7 +12,7 @@ using UnityEngine.UI;
 /// Test3 scene is for testing UI binding.
 /// </summary>
 [TestFixture]
-public class Test3SceneTests
+public class Scene3Tests_UIBinding
 {
     private bool initialized = false;
 

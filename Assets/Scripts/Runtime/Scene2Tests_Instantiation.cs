@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 /// Test2 scene is for prefab variant and instantiation.
 /// </summary>
 [TestFixture]
-public class Test2SceneTests
+public class Scene2Tests_Instantiation
 {
     private bool initialized = false;
 
