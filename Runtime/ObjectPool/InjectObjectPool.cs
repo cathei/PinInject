@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Cathei.PinInject.Internal;
 using UnityEngine;
 
 namespace Cathei.PinInject
@@ -9,111 +10,58 @@ namespace Cathei.PinInject
     /// <summary>
     /// game object pool that injects on instantiation
     /// </summary>
-    public class InjectObjectPool
+    public static class InjectObjectPool
     {
-        private class PoolImpl : GenericObjectPool<GameObject>
+        private static Transform CreateRoot(GameObject prefab, bool isPersistent)
         {
-            internal readonly Transform _root;
-            internal readonly GameObject _prefab;
-            internal readonly Pin.InstantiatorDelegate _instantiator;
+            var root = new GameObject($"InjectObjectPool {prefab.name}");
 
-            public PoolImpl(Transform root, GameObject prefab, int minInstance, int maxInstance, Pin.InstantiatorDelegate instantiator)
-                : base(minInstance, maxInstance)
-            {
-                _root = root;
-                _prefab = prefab;
-                _instantiator = instantiator;
+            if (isPersistent)
+                UnityEngine.Object.DontDestroyOnLoad(root);
 
-                _root.gameObject.SetActive(false);
-            }
-
-            protected override GameObject CreateInstance()
-            {
-                return _instantiator(_prefab, _root.transform);
-            }
-
-            protected override void ResetInstance(GameObject instance)
-            {
-                instance.transform.SetParent(_root.transform);
-            }
-
-            protected override void DisposeInstance(GameObject instance)
-            {
-                UnityEngine.Object.Destroy(instance);
-            }
+            root.SetActive(false);
+            return root.transform;
         }
 
-        private readonly PoolImpl _poolImpl;
-
-        public InjectObjectPool(Transform root, GameObject prefab, int minInstance = 0, int maxInstance = 100, Pin.InstantiatorDelegate instantiator = null)
+        public static IInjectObjectPool Create(GameObject prefab, bool isPersistent = true)
         {
-            instantiator ??= Pin.DefaultInstantiator;
-            _poolImpl = new PoolImpl(root, prefab, minInstance, maxInstance, instantiator);
+            return Create(prefab, Pin.DefaultInstantiator, isPersistent : isPersistent);
         }
 
-        public GameObject Spawn(Transform parent)
+        public static IInjectObjectPool Create(
+            GameObject prefab, int minInstance, int maxInstance, bool isPersistent = true)
         {
-            return SpawnInternal(parent, new Pin.PositionArgs
-            {
-                position = _poolImpl._prefab.transform.position,
-                rotation = _poolImpl._prefab.transform.rotation,
-                worldSpace = false
-            });
+            return Create(prefab, Pin.DefaultInstantiator, minInstance, maxInstance, isPersistent);
         }
 
-        public GameObject Spawn(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true)
+        public static IInjectObjectPool Create(
+            GameObject prefab, Pin.InstantiatorDelegate instantiator,
+            int minInstance = 0, int maxInstance = 100, bool isPersistent = true)
         {
-            return SpawnInternal(parent, new Pin.PositionArgs
-            {
-                position = position,
-                rotation = rotation,
-                worldSpace = worldSpace
-            });
+            var root = CreateRoot(prefab, isPersistent);
+            return new InjectObjectPoolImpl(root, prefab, minInstance, maxInstance, instantiator);
         }
 
-        private GameObject SpawnInternal(Transform parent, Pin.PositionArgs args)
+        public static IInjectObjectPool<T> Create<T>(T prefab, bool isPersistent = true)
+            where T : Component
         {
-            var instance = _poolImpl.Get();
-
-            instance.SetActive(false);
-
-            instance.transform.SetParent(parent);
-
-            args.Apply(instance.transform);
-
-            Pin.Inject(instance);
-
-            instance.SetActive(true);
-            return instance;
+            return Create(prefab, Pin.DefaultInstantiator, isPersistent : isPersistent);
         }
 
-        public void Despawn(GameObject instance)
+        public static IInjectObjectPool<T> Create<T>(
+                T prefab, int minInstance, int maxInstance, bool isPersistent = true)
+            where T : Component
         {
-            _poolImpl.Release(instance);
-        }
-    }
-
-    public class InjectObjectPool<T> : InjectObjectPool where T : Component
-    {
-        public InjectObjectPool(Transform root, T prefab, int minInstance = 0, int maxInstance = 100)
-            : base(root, prefab.gameObject, minInstance, maxInstance)
-        { }
-
-        public new T Spawn(Transform parent)
-        {
-            var instance = base.Spawn(parent);
-            return instance.GetComponent<T>();
+            return Create(prefab, Pin.DefaultInstantiator, minInstance, maxInstance, isPersistent);
         }
 
-        public new T Spawn(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true)
+        public static IInjectObjectPool<T> Create<T>(
+                T prefab, Pin.InstantiatorDelegate instantiator,
+                int minInstance = 0, int maxInstance = 100, bool isPersistent = true)
+            where T : Component
         {
-            var instance = base.Spawn(position, rotation, parent, worldSpace);
-            return instance.GetComponent<T>();
-        }
-
-        public void Despawn(T instance)
-        {
-            Despawn(instance.gameObject);
+            var root = CreateRoot(prefab.gameObject, isPersistent);
+            return new InjectObjectPoolImpl<T>(root, prefab, minInstance, maxInstance, instantiator);
         }
     }
 }

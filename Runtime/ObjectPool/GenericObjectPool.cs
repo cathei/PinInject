@@ -2,54 +2,42 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Cathei.PinInject.Internal;
+using UnityEngine;
 
 namespace Cathei.PinInject
 {
-    /// <summary>
-    /// A generic object pool for C# object.
-    /// </summary>
-    public class GenericObjectPool<T> where T : class, new()
+    public static class GenericObjectPool
     {
-        private Stack<T> _pool = new Stack<T>();
+        private static void Ignore<T>(T instance) { }
 
-        private readonly int _maxInstance;
-
-        public GenericObjectPool(int minInstance = 0, int maxInstance = 100)
+        public static IObjectPool<T> Create<T>(int minInstance = 0, int maxInstance = 100)
+            where T : class, new()
         {
-            _maxInstance = maxInstance;
-
-            for (int i = 0; i < minInstance; i++)
-                _pool.Push(CreateInstance());
+            return Create(() => new T(), Ignore, Ignore, minInstance, maxInstance);
         }
 
-        public T Get()
+        public static IObjectPool<T> Create<T>(
+                Func<T> createInstance, int minInstance = 0, int maxInstance = 100)
+            where T : class
         {
-            T instance;
-
-            if (_pool.Count > 0)
-                instance = _pool.Pop();
-            else
-                instance = CreateInstance();
-            return instance;
+            return Create(createInstance, Ignore, Ignore, minInstance, maxInstance);
         }
 
-        public void Release(T instance)
+        public static IObjectPool<T> Create<T>(
+                Action<T> resetInstance, int minInstance = 0, int maxInstance = 100)
+            where T : class, new()
         {
-            if (_pool.Count < _maxInstance)
-            {
-                ResetInstance(instance);
-                _pool.Push(instance);
-            }
-            else
-            {
-                DisposeInstance(instance);
-            }
+            return Create(() => new T(), resetInstance, Ignore, minInstance, maxInstance);
         }
 
-        protected virtual T CreateInstance() { return new T(); }
-
-        protected virtual void ResetInstance(T instance) { }
-
-        protected virtual void DisposeInstance(T instance) { }
+        public static IObjectPool<T> Create<T>(
+                Func<T> createInstance, Action<T> resetInstance, Action<T> disposeInstance,
+                int minInstance = 0, int maxInstance = 100)
+            where T : class
+        {
+            return new GenericObjectPoolImpl<T>(
+                minInstance, maxInstance, createInstance, resetInstance ?? Ignore, disposeInstance ?? Ignore);
+        }
     }
 }
