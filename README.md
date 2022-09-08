@@ -16,6 +16,8 @@ Minimalistic Dependency Injection tool for Unity
 * No unnecessary overconfiguration
 * Anti-patterns are not allowed
 * Static API gives you flexibility
+* Utilities like Auto-Inject Collection and Object Pool
+* Supports easy UI Binding with minimal Editor work
 
 ## Installation
 You can install `PinInject` with Unity Package Manager, choose `Add package from git URL...`
@@ -84,8 +86,46 @@ Now you don't have to reference singleton. It will work just like how Unity insp
 
 ## Defining Scene Context and GameObject Context
 Any `IInjectContext` Component under `SceneInjectRoot` becomes Scene Context and will affect every object in that scene and instantiated to the scene.
+```cs
+public class MySceneContext : MonoBehaviour, IInjectContext
+{
+    // assigned from inspector
+    public GameObject sceneObject;
+
+    public void Configure(IInjectBinder binder)
+    {
+        // shows named injection
+        binder.Bind("MySceneObject", sceneObject);
+    }
+}
+```
 
 Otherwise, `IInjectContext` Component will be GameObject Context. GameObject context will be applied to any MonoBehaviour on same transform or it's children.
+
+```cs
+public class MyGameObjectContext : MonoBehaviour, IInjectContext
+{
+    // injected from global context
+    [Inject]
+    private GameManager gameManager;
+
+    // injected from scene context (named injection)
+    [Inject("MySceneObject")]
+    private GameObject sceneObject;
+
+    // assigned from inspector
+    public string playerName;
+
+    public void Configure(IInjectBinder binder)
+    {
+        Player player = gameManager.GetPlayer(playerName);
+
+        // binding with interface
+        // IPlayer will be injected to children game objects
+        binder.Bind<IPlayer>(player);
+    }
+}
+```
 
 ## Named Injection
 You can perform named injection by `Bind("name", instance)` and using same name as `[Inject("name")]`.
