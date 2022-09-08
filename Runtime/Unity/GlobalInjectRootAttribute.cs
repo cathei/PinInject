@@ -6,8 +6,8 @@ using UnityEngine;
 namespace Cathei.PinInject
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class SetUpGlobalContextAttribute : RuntimeInitializeOnLoadMethodAttribute
+    public class GlobalInjectRootAttribute : RuntimeInitializeOnLoadMethodAttribute
     {
-        public SetUpGlobalContextAttribute() : base(RuntimeInitializeLoadType.BeforeSplashScreen) { }
+        public GlobalInjectRootAttribute() : base(RuntimeInitializeLoadType.BeforeSplashScreen) { }
     }
 }

@@ -56,18 +56,18 @@ public class MyGlobalContext : IInjectContext
         // ...
     }
 
-    [SetUpGlobalContext]
+    [GlobalInjectRoot]
     static void SetUp()
     {
         Pin.AddGlobalContext<MyGlobalContext>();
     }
 }
 ```
-`SetUpGlobalContextAttribute` is a wrapper for Unity's `RuntimeInitializeOnLoadMethodAttribute`. The Global context will be applied **any** GameObject or regular C# object that injected through PinInject.
+`[GlobalInjectRoot]` is a wrapper for Unity's `[RuntimeInitializeOnLoadMethod]`. The Global context will be applied **any** GameObject or regular C# object that injected through PinInject.
 
 Then add `SceneInjectRoot` to your scene. This is component that triggers injection when scene loading.
 
-Now you can add `InjectAttribute` to your field or property to inject in your component.
+Now you can add `[Inject]` to your field or property to inject in your component.
 
 ## Injecting into MonoBehaviour
 ```cs
