@@ -65,7 +65,7 @@ public class MyGlobalContext : IInjectContext
 ```
 `[GlobalInjectRoot]` is a wrapper for Unity's `[RuntimeInitializeOnLoadMethod]`. The Global context will be applied **any** GameObject or regular C# object that injected through PinInject.
 
-Then add `SceneInjectRoot` to your scene. This is component that triggers injection when scene loading.
+Then add `SceneInjectRoot` to your scene (Right click on your Hierarchy and select `PinInject/Scene Inject Root`). This is component that triggers injection when scene loading.
 
 Now you can add `[Inject]` to your field or property to inject in your component.
 
