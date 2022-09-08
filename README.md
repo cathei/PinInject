@@ -59,8 +59,13 @@ Now you can add `InjectAttribute` to your field or property to inject in your co
 ```cs
 public class MyComponent : MonoBehaviour
 {
+    // injection works with any field
     [Inject]
     private GameManager gameManager;
+
+    // injection works with any properties with setter
+    [Inject]
+    public ItemManager ItemManager { get; private set; }
 }
 ```
 Now you don't have to reference singleton. It will work just like how Unity inspector injects value for you.
