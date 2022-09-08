@@ -1,8 +1,10 @@
+[![openupm](https://img.shields.io/npm/v/com.cathei.pininject?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.cathei.pininject/) [![GitHub](https://img.shields.io/github/license/cathei/PinInject)](https://github.com/cathei/PinInject/blob/main/LICENSE) [![Discord](https://img.shields.io/discord/942240862354702376?color=%235865F2&label=discord&logo=discord&logoColor=%23FFFFFF)](https://dsc.gg/coffcook)
+
 # PinInject 📌
 Minimalistic Dependency Injection tool for Unity
 
 > **Warning**  
-> PinInject is under development, current stage is: `Prototyping`
+> PinInject is under development, current stage is: `Alpha`
 
 ## Dependency Injection
 * https://en.wikipedia.org/wiki/Dependency_injection
@@ -14,6 +16,16 @@ Minimalistic Dependency Injection tool for Unity
 * No unnecessary overconfiguration
 * Anti-patterns are not allowed
 * Static API gives you flexibility
+
+## Installation
+You can install `PinInject` with Unity Package Manager, choose `Add package from git URL...`
+```
+https://github.com/cathei/PinInject.git
+```
+You can also install it via [OpenUPM](https://openupm.com/packages/com.cathei.pininject/)
+```
+openupm add com.cathei.pininject
+```
 
 ## Where is Everything?
 PinInject's goal is to be the most minimalistic DI Container available for Unity, with simplest possible API. Because I've learned that **People will not use DI unless it is simple**.
