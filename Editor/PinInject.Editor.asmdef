@@ -1,0 +1,18 @@
+{
+    "name": "PinInject.Editor",
+    "rootNamespace": "",
+    "references": [
+        "PinInject"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
