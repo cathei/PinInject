@@ -8,6 +8,7 @@ Minimalistic Dependency Injection tool for Unity
 
 ## Dependency Injection
 * https://en.wikipedia.org/wiki/Dependency_injection
+* https://www.jamesshore.com/v2/blog/2006/dependency-injection-demystified
 * https://www.sebaslab.com/ioc-container-unity-part-1
 * https://moderncsharpinunity.github.io/post/dependency-injection-on-unity
 
