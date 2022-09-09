@@ -22,7 +22,7 @@ namespace Cathei.PinInject.Internal
         public IEnumerable<InjectableProperty> Injectables => _injectables;
         public IEnumerable<ResolvableProperty> Resolvables => _resolvables;
 
-        public bool HasAnyAttribute => _injectables != null || _resolvables != null;
+        public readonly bool HasAnyAttribute;
 
         private readonly List<InjectableProperty> _injectables = null;
         private readonly List<ResolvableProperty> _resolvables = null;
@@ -93,6 +93,10 @@ namespace Cathei.PinInject.Internal
                     _resolvables.Add(new ResolvableProperty(field.GetValue));
                 }
             }
+
+            HasAnyAttribute = _injectables != null
+                || _resolvables != null
+                || typeof(IPostInjectHandler).IsAssignableFrom(type);
         }
 
         private Func<object, string> IdGetter(Type type, InjectAttribute attr)

@@ -23,14 +23,11 @@ namespace Cathei.PinInject.Internal
 
             _recursiveCheck.Add(obj);
 
-            var reflection = ReflectionCache.Get(obj.GetType());
-            var context = obj as IInjectContext;
-
             IInjectContainer container = baseContainer;
             IInjectBinder binder = null;
 
             // another depth of injection
-            if (context != null)
+            if (obj is IInjectContext)
             {
                 var childContainer = new InjectContainerImpl();
                 childContainer.SetParent(baseContainer);
@@ -39,9 +36,16 @@ namespace Cathei.PinInject.Internal
                 binder = childContainer;
             }
 
+            InjectBindReslove(obj, container, binder);
+        }
+
+        internal void InjectBindReslove(object obj, IInjectContainer container, IInjectBinder binder)
+        {
+            var reflection = ReflectionCache.Get(obj.GetType());
+
             InjectProperties(reflection, obj, container);
 
-            if (context != null)
+            if (obj is IInjectContext context)
                 context.Configure(binder);
 
             ResolveProperties(reflection, obj, container);
@@ -50,7 +54,7 @@ namespace Cathei.PinInject.Internal
                 postInjectHandler.PostInject();
         }
 
-        public void InjectProperties(ReflectionCache reflection, object obj, IInjectContainer container)
+        private void InjectProperties(ReflectionCache reflection, object obj, IInjectContainer container)
         {
             if (reflection.Injectables == null)
                 return;
@@ -66,7 +70,7 @@ namespace Cathei.PinInject.Internal
             }
         }
 
-        public void ResolveProperties(ReflectionCache reflection, object obj, IInjectContainer container)
+        private void ResolveProperties(ReflectionCache reflection, object obj, IInjectContainer container)
         {
             if (reflection.Resolvables == null)
                 return;

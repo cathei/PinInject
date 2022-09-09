@@ -31,29 +31,21 @@ namespace Cathei.PinInject
             if (_sceneContainers.ContainsKey(scene.handle))
                 throw new InjectException("Scene should only contain one SceneInjectRoot");
 
-            var container = new InjectContainerImpl();
-            container.SetParent(_rootContainer);
+            var containerImpl = new InjectContainerImpl();
+            containerImpl.SetParent(_rootContainer);
 
             // register scene container
-            _sceneContainers.Add(scene.handle, container);
+            _sceneContainers.Add(scene.handle, containerImpl);
 
             injectRoot.GetComponentsInChildren(true, _sceneContexts);
 
             // injecting and configuring scene contexts
             foreach (var context in _sceneContexts)
-            {
-                var cache = ReflectionCache.Get(context.GetType());
-
-                _injectStrategy.InjectProperties(cache, context, container);
-
-                context.Configure(container);
-
-                _injectStrategy.ResolveProperties(cache, context, container);
-            }
+                _injectStrategy.InjectBindReslove(context, containerImpl, containerImpl);
 
             scene.GetRootGameObjects(_sceneRootObjects);
 
-            // inject all other game objects
+            // inject all other game objects in scene
             for (int i = 0; i < _sceneRootObjects.Count; ++i)
             {
                 GameObject rootObject = _sceneRootObjects[i];

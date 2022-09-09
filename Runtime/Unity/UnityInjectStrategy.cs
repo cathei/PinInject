@@ -48,17 +48,7 @@ namespace Cathei.PinInject.Internal
                     container = baseContainer;
                 }
 
-                var cache = ReflectionCache.Get(reference.component.GetType());
-
-                InjectProperties(cache, reference.component, container);
-
-                if (reference.component is IInjectContext context)
-                    context.Configure(containerImpl);
-
-                ResolveProperties(cache, reference.component, container);
-
-                if (reference.component is IPostInjectHandler postInjectHandler)
-                    postInjectHandler.PostInject();
+                InjectBindReslove(reference.component, container, containerImpl);
             }
 
             // when it's injected, references should be invalidated
@@ -112,17 +102,27 @@ namespace Cathei.PinInject.Internal
             target.GetComponents(_tempComponents);
 
             // contexts should be injected first
-            _tempComponents.Sort((x, y) => x is IInjectContext ? -1 : 1);
+            foreach (var component in _tempComponents)
+            {
+                if (component is IInjectContext)
+                {
+                    cache.InnerReferences.Add(new InjectCacheComponent.InnerPrefabReferences
+                    {
+                        container = container,
+                        component = component
+                    });
+                }
+            }
 
             foreach (var component in _tempComponents)
             {
                 // it is already included
-                if (component is InjectContainerComponent)
+                if (component is IInjectContext)
                     continue;
 
                 var reflection = ReflectionCache.Get(component.GetType());
 
-                if (reflection.HasAnyAttribute || component is IInjectContext)
+                if (reflection.HasAnyAttribute)
                 {
                     cache.InnerReferences.Add(new InjectCacheComponent.InnerPrefabReferences
                     {
