@@ -10,7 +10,7 @@ public class GlobalContext : IInjectContext
         Debug.Log("Configuring Global Context");
     }
 
-    [SetUpGlobalContext]
+    [GlobalInjectRoot]
     public static void SetUp()
     {
         Pin.AddGlobalContext<GlobalContext>();
