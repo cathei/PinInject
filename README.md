@@ -16,7 +16,7 @@ You may ask, "Is it special thing? Why does it even deserve fancy name?". Becaus
 
 You may ask, "Why do I need DI plugin in Unity, if I can already do it with Constructor or Inspector?". Because first, you cannot use constructor for MonoBehaviours. Second, using Inspector can result in complex dependency graph. I'm not saying you shouldn't use Inspector, but it's good to limit their unlimited possibility, so to make easier to find which one is referencing which. Your code will become more maintainable.
 
-Last but not least, you can use DI to avoid Singleton pattern. Don't get me wrong, having only one instance of your class or GameObject that itself is totally fine. The problem is when you access it from everywhere, it will be hard to modify or refactor your code. For example you made `InventoryManager` as singleton, then after several month you decided to support split-screen multiplayer. Now `InventoryManager` has to be an instance. That will be major impact to your code. If you use DI container, it will be easy as just changing where the dependency injected!
+Last but not least, you can use DI to avoid Singleton pattern. Don't get me wrong, having only one instance of your class or GameObject - that itself is totally fine. The problem is when you access it from everywhere, it will be hard to modify or refactor your code. For example you made `InventoryManager` as singleton, then after several month you decided to support split-screen multiplayer. Now `InventoryManager` (and all other singletons you have) has to be an instance. That will be major impact, almost rewriting your code. If you use DI container, it will be easy as just changing where the dependency injected!
 
 ### More Information
 * https://en.wikipedia.org/wiki/Dependency_injection
