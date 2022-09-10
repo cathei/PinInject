@@ -7,6 +7,18 @@ Minimalistic Dependency Injection tool for Unity
 > PinInject is under development, current stage is: `Alpha`
 
 ## Dependency Injection
+### What is Dependency Injection?
+Dependency Injection, DI for short, is combination of two word - 'Dependency' and 'Injection'. Now in C#, Dependency is the other class's instance that your class needs. Injection means external class gives the instance to your class, instead of your class creating or finding for the instance.
+
+If that doesn't click to you: When you drag-drop your GameObject to your script from Unity Inspector, **you are doing Dependency Injection**. Also, if you pass instance through your class's Constructor, **you are doing Dependency Injection**.
+
+You may ask, "Is it special thing? Why does it even deserve fancy name?". Because it makes your life easier, by making your code reusable and decoupled from actual implementation. Imagine the world you can only reference object with `GameObject.Find` or `FindGameObjectsWithTag`.
+
+You may ask, "Why do I need DI plugin in Unity, if I can already do it with Constructor or Inspector?". Because first, you cannot use constructor for MonoBehaviours. Second, using Inspector can result in complex dependency graph. I'm not saying you shouldn't use Inspector, but it's good to limit their unlimited possibility, so to make easier to find which one is referencing which. Your code will become more maintainable.
+
+Last but not least, you can use DI to avoid Singleton pattern. Don't get me wrong, having only one instance of your class or GameObject that itself is totally fine. The problem is when you access it from everywhere, it will be hard to modify or refactor your code. For example you made `InventoryManager` as singleton, then after several month you decided to support split-screen multiplayer. Now `InventoryManager` has to be an instance. That will be major impact to your code. If you use DI container, it will be easy as just changing where the dependency injected!
+
+### More Information
 * https://en.wikipedia.org/wiki/Dependency_injection
 * https://www.jamesshore.com/v2/blog/2006/dependency-injection-demystified
 * https://www.sebaslab.com/ioc-container-unity-part-1
@@ -33,7 +45,7 @@ openupm add com.cathei.pininject
 ## Where is Everything?
 PinInject's goal is to be the most minimalistic DI Container available for Unity, with simplest possible API. Because I've learned that **People will not use DI unless it is simple**.
 
-Also, Unity's GameObject and Component architecture already provides you `Service Locator Pattern`, which has similiar purpose to `Dependency Injection`. Which can cover edge-case of PinInject.
+Also, Unity's GameObject and Component architecture already provides you 'Service Locator Pattern', which has similiar purpose to 'Dependency Injection'. Which you can alternatively use to find dependency with, you know, `GetComponent`. So DI container on Unity doesn't require so complex settings. It's all about making your life easy.
 
 ### PinInject **doesn't** support Lazy Binding
 Strange, is it? Most DI container supports lazy binding by default. But PinInject doesn't. Your object will manage injection context's lifecycle. Your object's hierarchy will match with injection hierarchy. Since PinInject doesn't support lazy binding, you wouldn't have to worry about circular dependency.
