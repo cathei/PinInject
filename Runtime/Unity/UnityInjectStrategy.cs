@@ -57,9 +57,7 @@ namespace Cathei.PinInject.Internal
 
         public InjectCacheComponent CacheInnerReferences(GameObject gameObject)
         {
-            var component = gameObject.GetComponent<InjectCacheComponent>();
-
-            if (component == null)
+            if (!gameObject.TryGetComponent(out InjectCacheComponent component))
             {
                 component = gameObject.AddComponent<InjectCacheComponent>();
                 component.hideFlags = hiddenComponentFlags;
@@ -80,12 +78,12 @@ namespace Cathei.PinInject.Internal
         private void CacheInnerReferencesInternal(InjectCacheComponent cache, Transform target, InjectContainerComponent parentContainer)
         {
             // scene inject root should not be affected
-            if (target.GetComponent<SceneInjectRoot>())
+            if (target.TryGetComponent(out SceneInjectRoot _))
                 return;
 
             InjectContainerComponent container = parentContainer;
 
-            if (target.GetComponent<IInjectContext>() != null)
+            if (target.TryGetComponent(out IInjectContext _))
             {
                 // child container will be used for this game object
                 container = GetContainerComponent(target.gameObject);
@@ -97,6 +95,7 @@ namespace Cathei.PinInject.Internal
                     container = container,
                     component = container
                 });
+
             }
 
             target.GetComponents(_tempComponents);
@@ -141,9 +140,7 @@ namespace Cathei.PinInject.Internal
 
         private InjectContainerComponent GetContainerComponent(GameObject gameObject)
         {
-            var component = gameObject.GetComponent<InjectContainerComponent>();
-
-            if (component == null)
+            if (!gameObject.TryGetComponent(out InjectContainerComponent component))
             {
                 component = gameObject.AddComponent<InjectContainerComponent>();
                 component.hideFlags = hiddenComponentFlags;
@@ -160,9 +157,7 @@ namespace Cathei.PinInject.Internal
 
             while (parent != null)
             {
-                var component = parent.GetComponent<InjectContainerComponent>();
-
-                if (component != null)
+                if (parent.TryGetComponent(out InjectContainerComponent component))
                 {
                     parentContainer = component._container;
                     break;
