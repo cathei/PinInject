@@ -56,75 +56,85 @@ You can manually pass dependencies by constructor whenever possible. PinInject i
 ### PinInject **does** support static APIs
 Problem with static APIs are that you need to pass context. But in Unity, GameObject already has own context: the hierarchy. Thus, your context should be inferred from your hierarchy. All you need is to do is adding `SceneInjectRoot` then replace `Instantiate` to `Pin.Instantiate`, it will magically instantiate your GameObject with dependency injection!
 
-## Defining Context
-In PinInject, you can define `Global`, `Scene` and `GameObject` context. Let's define Global context
-
+## Defining Scene Context
+In PinInject, you can define `Shared`, `Scene` and `GameObject` context. Let's define Scene context. It will applied to any component in the same scene.
 ```cs
-public class MyGlobalContext : IInjectContext
+public class MySceneContext : MonoBehaviour, IInjectContext
 {
+    // assigned from inspector
+    public MyPlayer player;
+
+    // assigned from inspector
+    public GameObject destination;
+
     public void Configure(IInjectBinder binder)
     {
-        binder.Bind(new GameManager());
-        binder.Bind(new ItemManager());
-        // ...
-    }
+        // this will be bind to `MyPlayer` type
+        binder.Bind(player);
 
-    [GlobalInjectRoot]
-    static void SetUp()
-    {
-        Pin.AddGlobalContext<MyGlobalContext>();
+        // named injection
+        binder.Bind("Destination", destination);
     }
 }
 ```
-`[GlobalInjectRoot]` is a wrapper for Unity's `[RuntimeInitializeOnLoadMethod]`. The Global context will be applied **any** GameObject or regular C# object that injected through PinInject.
+Then add `SceneInjectRoot` to your scene (Right click on your Hierarchy and select `PinInject/Scene Inject Root`). This is component that triggers injection when scene loading. Any `IInjectContext` attached with `SceneInjectRoot` considered Scene context.
 
-Then add `SceneInjectRoot` to your scene (Right click on your Hierarchy and select `PinInject/Scene Inject Root`). This is component that triggers injection when scene loading.
-
-Now you can add `[Inject]` to your field or property to inject in your component.
+Now you can add `[Inject]` to your field or property to inject in your component. Scene context will inject value to any GameObject that loaded with the scene, or instantiated using `Pin.Instantiate` to the scene.
 
 ## Injecting into MonoBehaviour
+Simplely add `[Inject]` any variable with your binded type, then the value will be injected.
+
 ```cs
 public class MyComponent : MonoBehaviour
 {
     // injection works with any field
     [Inject]
-    private GameManager gameManager;
+    private MyPlayer player;
 
     // injection works with any properties with setter
-    [Inject]
-    public ItemManager ItemManager { get; private set; }
+    [Inject("Destination")]
+    public GameObject Goal { get; private set; }
 }
 ```
-Now you don't have to reference singleton. It will work just like how Unity inspector injects value for you.
+Now you don't have to drag-drop your components except to scene context. `[Inject]` will work just like how Unity inspector injects value for you.
 
-## Defining Scene Context and GameObject Context
-Any `IInjectContext` Component under `SceneInjectRoot` becomes Scene Context and will affect every object in that scene and instantiated to the scene.
+## Defining Shared Context
+Shared Context is used to share across scenes. Shared Context is managed as asset and will be persistent once initialized. You can add `SharedInjectRoot` (Right click on your folder and select `Create/PinInject/Shared Inject Root`) as prefab.
+
+Any `IInjectContext` Component attached with `SharedInjectRoot` becomes Shared Context and will affect every object in the referencing scene and instantiated to the scene. You can add child GameObject to it, then they will be persistent as well. It is useful for singleton pattern.
 ```cs
-public class MySceneContext : MonoBehaviour, IInjectContext
+public class MySharedContext : MonoBehaviour, IInjectContext
 {
-    // assigned from inspector
-    public GameObject sceneObject;
+    // SharedInjectRoot prefab inner reference
+    public GameManager gameManager;
 
     public void Configure(IInjectBinder binder)
     {
-        // shows named injection
-        binder.Bind("MySceneObject", sceneObject);
+        // set MonoBehaviour singleton
+        binder.Bind(gameManager);
+
+        // set new C# singleton ItemManager
+        binder.Bind(new ItemManager());
     }
 }
 ```
+Add `MySharedContext` to `SharedInjectRoot`, now reference `SharedInjectRoot` from your `SceneInjectRoot`. Then the setup is done.
 
-Otherwise, `IInjectContext` Component will be GameObject Context. GameObject context will be applied to any MonoBehaviour on same transform or it's children.
+ Now you don't have to worry about referencing singleton as `GameManager.Instance` or such. You can easily type `[Inject] GameManager gameManager`.
+
+## Defining Scene Context and GameObject Context
+Any `IInjectContext` Component that is not attached to `SceneInjectRoot` or `SharedInjectRoot` will be considered GameObject Context. GameObject context will be applied to any MonoBehaviour on same transform or it's children.
 
 ```cs
 public class MyGameObjectContext : MonoBehaviour, IInjectContext
 {
-    // injected from global context
+    // injected from shared context
     [Inject]
     private GameManager gameManager;
 
     // injected from scene context (named injection)
-    [Inject("MySceneObject")]
-    private GameObject sceneObject;
+    [Inject("Destination")]
+    private GameObject goal;
 
     // assigned from inspector
     public string playerName;
@@ -161,9 +171,6 @@ public class InjectedParent : IInjectContext
 {
     private string value = "injection completed";
 
-    [Inject]
-    private GameManager gameManager;
-
     [Resolve]
     private InjectedChild child = new();
 
@@ -175,11 +182,13 @@ public class InjectedParent : IInjectContext
 ```
 Executed `Pin.Inject(new InjectedParent());` to show the value.
 
-`InjectContainer` holds hierarchical information that injected into specific object.
-For `GameObject`, you don't have to provide `InjectContainer`.
+> **Note**  
+> You can inject `IInjectContainer` type to use with `Pin.Inject`, to pass same context to children. For `GameObject`, you don't have to provide `IInjectContainer` because it will be inferred from hierarchy.
 
 ## About Caches
-PinInject attaches small component to your prefab to cache components, so it will automatically converted into instance reference when you instantiate.  Also of course, it caches reflection result to improve performance.
+PinInject attaches small component to your prefab to cache components, so it will automatically converted into instance reference when you instantiate. 
+
+Also of course, it caches reflection result to improve performance. Same type will not be reflected again.
 
 ## Using Collections
 There is `InjectCollection` and `InjectKeyedCollection`. These collections will inject to collection's member automatially when item is added to collection.
