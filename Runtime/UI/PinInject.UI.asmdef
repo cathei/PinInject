@@ -1,7 +1,8 @@
 {
-    "name": "PinInject",
+    "name": "PinInject.UI",
     "rootNamespace": "",
     "references": [
+        "PinInject",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
