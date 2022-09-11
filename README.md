@@ -57,7 +57,11 @@ You can manually pass dependencies by constructor whenever possible. PinInject i
 Problem with static APIs are that you need to pass context. But in Unity, GameObject already has own context: the hierarchy. Thus, your context should be inferred from your hierarchy. All you need is to do is adding `SceneInjectRoot` then replace `Instantiate` to `Pin.Instantiate`, it will magically instantiate your GameObject with dependency injection!
 
 ## Defining Scene Context
-In PinInject, you can define `Shared`, `Scene` and `GameObject` context. Let's define Scene context. It will applied to any component in the same scene.
+In PinInject, you can define `Shared`, `Scene` and `GameObject` context.
+
+![Hierarchy](.github/images/hierarchy.png)
+
+Let's start from Scene context. It will applied to any component in the same scene.
 ```cs
 public class MySceneContext : MonoBehaviour, IInjectContext
 {
