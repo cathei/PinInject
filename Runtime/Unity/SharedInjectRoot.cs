@@ -5,5 +5,11 @@ using UnityEngine;
 namespace Cathei.PinInject
 {
     public class SharedInjectRoot : MonoBehaviour, IInjectRoot
-    { }
+    {
+        private void Awake()
+        {
+            if (gameObject.scene.name != "DontDestroyOnLoad")
+                throw new InjectException("SharedInjectRoot must not be in a scene");
+        }
+    }
 }

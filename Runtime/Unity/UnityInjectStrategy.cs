@@ -77,13 +77,9 @@ namespace Cathei.PinInject.Internal
         // prefab version is recommended for performance
         private void CacheInnerReferencesInternal(InjectCacheComponent cache, Transform target, InjectContainerComponent parentContainer)
         {
-            // inject roots should not be affected
-            if (target.TryGetComponent(out IInjectRoot _))
-                return;
-
             InjectContainerComponent container = parentContainer;
 
-            if (target.TryGetComponent(out IInjectContext _))
+            if (target.TryGetComponent(out IInjectContext _) || target.TryGetComponent(out IInjectRoot _))
             {
                 // child container will be used for this game object
                 container = GetContainerComponent(target.gameObject);
@@ -95,7 +91,6 @@ namespace Cathei.PinInject.Internal
                     container = container,
                     component = container
                 });
-
             }
 
             target.GetComponents(_tempComponents);
@@ -138,7 +133,7 @@ namespace Cathei.PinInject.Internal
             }
         }
 
-        private InjectContainerComponent GetContainerComponent(GameObject gameObject)
+        internal InjectContainerComponent GetContainerComponent(GameObject gameObject)
         {
             if (!gameObject.TryGetComponent(out InjectContainerComponent component))
             {

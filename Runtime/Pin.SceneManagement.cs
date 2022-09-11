@@ -31,11 +31,8 @@ namespace Cathei.PinInject
 
             int instanceId = injectRoot.GetInstanceID();
 
-            if (_sharedContainers.TryGetValue(instanceId, out var containerImpl))
-                return containerImpl;
-
-            containerImpl = new InjectContainerImpl();
-            _sharedContainers[instanceId] = containerImpl;
+            if (_sharedContainers.TryGetValue(instanceId, out var container))
+                return container;
 
             var prefab = injectRoot.gameObject;
 
@@ -49,18 +46,22 @@ namespace Cathei.PinInject
 
                 UnityEngine.Object.DontDestroyOnLoad(instance);
 
-                injectRoot.GetComponentsInChildren(true, _tempContexts);
+                // inject root first
+                _injectStrategy.Inject(instance, null);
 
-                // injecting and configuring shared contexts
-                foreach (var context in _tempContexts)
-                    _injectStrategy.InjectBindResolve(context, containerImpl, containerImpl);
+                var sharedContainer = _injectStrategy.GetContainerComponent(instance.gameObject);
+
+                // register shared container
+                _sharedContainers.Add(instanceId, sharedContainer._container);
+
+                instance.SetActive(savedActiveSelf);
+
+                return sharedContainer._container;
             }
             finally
             {
                 prefab.SetActive(savedActiveSelf);
             }
-
-            return containerImpl;
         }
 
         internal static void SetUpScene(SceneInjectRoot injectRoot)
@@ -72,17 +73,13 @@ namespace Cathei.PinInject
 
             var sharedContainer = SetUpShared(injectRoot.sharedRoot);
 
-            var containerImpl = new InjectContainerImpl();
-            containerImpl.SetParent(sharedContainer);
+            // inject scene first
+            _injectStrategy.Inject(injectRoot.gameObject, sharedContainer);
+
+            var sceneContainer = _injectStrategy.GetContainerComponent(injectRoot.gameObject);
 
             // register scene container
-            _sceneContainers.Add(scene.handle, containerImpl);
-
-            injectRoot.GetComponentsInChildren(true, _tempContexts);
-
-            // injecting and configuring scene contexts
-            foreach (var context in _tempContexts)
-                _injectStrategy.InjectBindResolve(context, containerImpl, containerImpl);
+            _sceneContainers.Add(scene.handle, sceneContainer._container);
 
             scene.GetRootGameObjects(_tempRootObjects);
 
@@ -90,6 +87,9 @@ namespace Cathei.PinInject
             for (int i = 0; i < _tempRootObjects.Count; ++i)
             {
                 GameObject rootObject = _tempRootObjects[i];
+
+                if (rootObject == injectRoot.gameObject)
+                    continue;
 
                 Pin.Inject(rootObject);
             }
