@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 
 [TestFixture]
-public class ReflectionTests
+public class ReflectionUnitTests
 {
     public class InjectableClass
     {
