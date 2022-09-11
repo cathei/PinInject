@@ -157,6 +157,12 @@ public class MyGameObjectContext : MonoBehaviour, IInjectContext
 ## Named Injection
 You can perform named injection by `Bind("name", instance)` and using same name as `[Inject("name")]`.
 
+## Injection Timing
+Your object will be injected before `Awake` get called. For C# object or manually injected object, implement `IPostInjectHandler` to get callback when injection is done.
+
+## Injection Order
+For GameObjects and Components, injection order is deterministic. PinInject follows same order as Unity Hierarchy and Inspector view, from top to bottom. So if your GameObject is higher in Hierarchy, it will be injected first. If your component is higher from Inspector, it will be injected first.
+
 ## Injecting into C# object
 Just like when you inject to GameObject, you can create hierarchical context for regular C# objects. By using `ResolveAttribute`, you can inject recursively to your children, applying context.
 ```cs
