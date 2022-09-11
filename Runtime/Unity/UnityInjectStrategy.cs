@@ -48,7 +48,7 @@ namespace Cathei.PinInject.Internal
                     container = baseContainer;
                 }
 
-                InjectBindReslove(reference.component, container, containerImpl);
+                InjectBindResolve(reference.component, container, containerImpl);
             }
 
             // when it's injected, references should be invalidated
@@ -77,8 +77,8 @@ namespace Cathei.PinInject.Internal
         // prefab version is recommended for performance
         private void CacheInnerReferencesInternal(InjectCacheComponent cache, Transform target, InjectContainerComponent parentContainer)
         {
-            // scene inject root should not be affected
-            if (target.TryGetComponent(out SceneInjectRoot _))
+            // inject roots should not be affected
+            if (target.TryGetComponent(out IInjectRoot _))
                 return;
 
             InjectContainerComponent container = parentContainer;

@@ -36,10 +36,10 @@ namespace Cathei.PinInject.Internal
                 binder = childContainer;
             }
 
-            InjectBindReslove(obj, container, binder);
+            InjectBindResolve(obj, container, binder);
         }
 
-        internal void InjectBindReslove(object obj, IInjectContainer container, IInjectBinder binder)
+        internal void InjectBindResolve(object obj, IInjectContainer container, IInjectBinder binder)
         {
             var reflection = ReflectionCache.Get(obj.GetType());
 

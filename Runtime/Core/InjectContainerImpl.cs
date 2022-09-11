@@ -57,12 +57,17 @@ namespace Cathei.PinInject.Internal
 
         public void Bind<T>(T instance)
         {
-            _instances.Add((typeof(T), null), instance);
+            Bind(typeof(T), null, instance);
         }
 
         public void Bind<T>(string name, T instance)
         {
-            _instances.Add((typeof(T), name), instance);
+            Bind(typeof(T), name, instance);
+        }
+
+        private void Bind(Type type, string name, object instance)
+        {
+            _instances.Add((type, name), instance);
         }
 
         // public void Bind<T>() where T : new()
