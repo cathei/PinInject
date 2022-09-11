@@ -43,7 +43,7 @@ public class Scene5Tests_SharedRoot
         Assert.AreSame(_sharedContext.singleton, leaf.singleton);
     }
 
-    [Test, Order(2)]
+    [Test, Order(1)]
     public void Test5Scene_InitOrder()
     {
         string[] expected = new string[]
@@ -61,6 +61,18 @@ public class Scene5Tests_SharedRoot
         {
             Assert.AreEqual(expected[i], _sharedContext.initOrder[i]);
         }
+    }
+
+    [Test, Order(2)]
+    public void Test5Scene_InstantiateUnderSingleton()
+    {
+        var gameObject = new GameObject();
+        gameObject.transform.SetParent(_sharedContext.singleton.transform);
+
+        var leaf = Pin.AddComponent<Test5GameObjectLeaf>(gameObject);
+        Assert.AreSame(_sharedContext.singleton, leaf.singleton);
+
+        Object.Destroy(gameObject);
     }
 
     [UnityTest]
