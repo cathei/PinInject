@@ -81,7 +81,7 @@ public class MySceneContext : MonoBehaviour, IInjectContext
     }
 }
 ```
-Then add `SceneInjectRoot` to your scene (Right click on your Hierarchy and select `PinInject/Scene Inject Root`). This is component that triggers injection when scene loading. Any `IInjectContext` attached with `SceneInjectRoot` considered Scene context.
+Then add `SceneInjectRoot` to your scene (Right click on your Hierarchy and select `PinInject/Scene Inject Root`). This is component that triggers injection when scene loading. Any `IInjectContext` attached with `SceneInjectRoot` considered Scene context. Add your `MySceneContext` on the same object.
 
 Now you can add `[Inject]` to your field or property to inject in your component. Scene context will inject value to any GameObject that loaded with the scene, or instantiated using `Pin.Instantiate` to the scene.
 
