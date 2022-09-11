@@ -102,11 +102,11 @@ namespace Cathei.PinInject
 
         internal static InjectContainerImpl GetSceneContainer(Scene scene)
         {
-            if (!scene.IsValid())
+            if (!scene.IsValid() || scene.buildIndex == -1)
                 return null;
 
             if (!_sceneContainers.TryGetValue(scene.handle, out var container))
-                throw new InjectException("Scene is not loaded");
+                throw new InjectException("There is no SceneInjectRoot in the scene");
 
             return container;
         }

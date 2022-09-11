@@ -144,7 +144,7 @@ namespace Cathei.PinInject.Internal
             return component;
         }
 
-        private InjectContainerImpl FindParentContainer(Transform transform)
+        internal InjectContainerImpl FindParentContainer(Transform transform)
         {
             InjectContainerImpl parentContainer = null;
 
