@@ -82,7 +82,7 @@ namespace Cathei.PinInject.Internal
             if (target.TryGetComponent(out IInjectContext _) || target.TryGetComponent(out IInjectRoot _))
             {
                 // child container will be used for this game object
-                container = GetContainerComponent(target.gameObject);
+                container = GetOrAddContainerComponent(target.gameObject);
                 container.parent = parentContainer;
 
                 // container referencing itself
@@ -133,7 +133,7 @@ namespace Cathei.PinInject.Internal
             }
         }
 
-        internal InjectContainerComponent GetContainerComponent(GameObject gameObject)
+        internal InjectContainerComponent GetOrAddContainerComponent(GameObject gameObject)
         {
             if (!gameObject.TryGetComponent(out InjectContainerComponent component))
             {

@@ -9,6 +9,9 @@ namespace Cathei.PinInject
 {
     public static partial class Pin
     {
+        private static readonly Dictionary<int, InjectContainerImpl> _sharedContainers = new Dictionary<int, InjectContainerImpl>();
+        private static readonly Dictionary<int, InjectContainerImpl> _sceneContainers = new Dictionary<int, InjectContainerImpl>();
+
         private static readonly List<GameObject> _tempRootObjects = new List<GameObject>();
         private static readonly List<IInjectContext> _tempContexts = new List<IInjectContext>();
 
@@ -49,7 +52,7 @@ namespace Cathei.PinInject
                 // inject root first
                 _injectStrategy.Inject(instance, null);
 
-                var sharedContainer = _injectStrategy.GetContainerComponent(instance.gameObject);
+                var sharedContainer = _injectStrategy.GetOrAddContainerComponent(instance.gameObject);
 
                 // register shared container
                 _sharedContainers.Add(instanceId, sharedContainer._container);
@@ -76,7 +79,7 @@ namespace Cathei.PinInject
             // inject scene first
             _injectStrategy.Inject(injectRoot.gameObject, sharedContainer);
 
-            var sceneContainer = _injectStrategy.GetContainerComponent(injectRoot.gameObject);
+            var sceneContainer = _injectStrategy.GetOrAddContainerComponent(injectRoot.gameObject);
 
             // register scene container
             _sceneContainers.Add(scene.handle, sceneContainer._container);
