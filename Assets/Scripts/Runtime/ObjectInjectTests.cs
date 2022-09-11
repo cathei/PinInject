@@ -6,17 +6,8 @@ using UnityEngine;
 using UnityEngine.TestTools;
 
 [TestFixture]
-public class ObjectInjectTests
+public class ObjectInjectTests : IInjectContext
 {
-    public class GlboalInjectContext : IInjectContext
-    {
-        public void Configure(IInjectBinder binder)
-        {
-            binder.Bind<IBindWithInterface>(new BindWithInterface(8));
-            binder.Bind(new BindWithNew());
-        }
-    }
-
     public class InjectableChild
     {
         [Inject]
@@ -51,11 +42,20 @@ public class ObjectInjectTests
         }
     }
 
+    [Inject]
+    private IInjectContainer _container;
+
     [SetUp]
     public void Setup()
     {
         Pin.Reset();
-        Pin.AddGlobalContext<GlboalInjectContext>();
+        Pin.Inject(this);
+    }
+
+    public void Configure(IInjectBinder binder)
+    {
+        binder.Bind<IBindWithInterface>(new BindWithInterface(8));
+        binder.Bind(new BindWithNew());
     }
 
     [Test]
@@ -63,7 +63,7 @@ public class ObjectInjectTests
     {
         var parent = new InjectableParent("inject test", null);
 
-        Pin.Inject(parent);
+        Pin.Inject(parent, _container);
 
         Assert.AreEqual(null, parent.Nested);
         Assert.AreEqual("inject test", parent.child.bindedStr);
@@ -77,7 +77,7 @@ public class ObjectInjectTests
         var depth2 = new InjectableParent("depth2", depth3);
         var depth1 = new InjectableParent("depth1", depth2);
 
-        Pin.Inject(depth1);
+        Pin.Inject(depth1, _container);
 
         Assert.AreEqual("depth1", depth1.child.bindedStr);
         Assert.AreEqual("depth2", depth2.child.bindedStr);

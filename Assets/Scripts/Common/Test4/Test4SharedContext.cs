@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using Cathei.PinInject;
 using UnityEngine;
 
-public class SharedContext : IInjectContext
+public class Test4SharedContext : MonoBehaviour, IInjectContext
 {
     public void Configure(IInjectBinder binder)
     {
-        Debug.Log("Configuring Shared Context");
+        binder.Bind(new BindWithNew("Test Scene 4"));
     }
 }

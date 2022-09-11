@@ -6,17 +6,8 @@ using UnityEngine;
 using UnityEngine.TestTools;
 
 [TestFixture]
-public class CollectionInjectTests
+public class CollectionInjectTests : IInjectContext
 {
-    public class GlboalInjectContext : IInjectContext
-    {
-        public void Configure(IInjectBinder binder)
-        {
-            binder.Bind<IBindWithInterface>(new BindWithInterface(8));
-            binder.Bind(new BindWithNew());
-        }
-    }
-
     public class InjectableChild
     {
         [Inject]
@@ -72,11 +63,20 @@ public class CollectionInjectTests
         }
     }
 
+    [Inject]
+    private IInjectContainer _container;
+
     [SetUp]
     public void Setup()
     {
         Pin.Reset();
-        Pin.AddGlobalContext<GlboalInjectContext>();
+        Pin.Inject(this);
+    }
+
+    public void Configure(IInjectBinder binder)
+    {
+        binder.Bind<IBindWithInterface>(new BindWithInterface(8));
+        binder.Bind(new BindWithNew());
     }
 
     [Test]
@@ -93,7 +93,7 @@ public class CollectionInjectTests
         parent.list.Add(child1);
         parent.list.Add(child2);
 
-        Pin.Inject(parent);
+        Pin.Inject(parent, _container);
 
         parent.list.Add(child3);
         parent.list.Add(child4);
@@ -124,7 +124,7 @@ public class CollectionInjectTests
         parent.Add(child1);
         parent.Add(child2);
 
-        Pin.Inject(parent);
+        Pin.Inject(parent, _container);
 
         parent.Add(child3);
         parent.Add(child4);

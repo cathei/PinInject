@@ -24,14 +24,6 @@ public class Scene4Tests_InjectObjectPool
     private Transform parentB;
     private Transform parentBInternal;
 
-    public class GlboalInjectContext : IInjectContext
-    {
-        public void Configure(IInjectBinder binder)
-        {
-            binder.Bind(new BindWithNew("Test Scene 4"));
-        }
-    }
-
     [UnitySetUp]
     public IEnumerator Setup()
     {
@@ -40,7 +32,6 @@ public class Scene4Tests_InjectObjectPool
             initialized = true;
 
             Pin.Reset();
-            Pin.AddGlobalContext<GlboalInjectContext>();
 
             SceneManager.LoadScene("TestInject4", LoadSceneMode.Single);
 
