@@ -1,3 +1,5 @@
+// PinInject, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,6 +7,7 @@ namespace Cathei.PinInject.UI
 {
     public abstract class UIDispatcherBase<TComponent, TParam> : MonoBehaviour
     {
+        [InjectNameSelection]
         public string identifier;
 
         protected TComponent target;

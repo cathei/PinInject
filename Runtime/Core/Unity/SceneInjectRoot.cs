@@ -1,3 +1,5 @@
+// PinInject, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +10,7 @@ namespace Cathei.PinInject
     public class SceneInjectRoot : MonoBehaviour, IInjectRoot
     {
         [SerializeField]
-        internal SharedInjectRoot sharedRoot;
+        public SharedInjectRoot sharedRoot;
 
         private void Awake()
         {
