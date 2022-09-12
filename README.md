@@ -220,13 +220,16 @@ public class MyContext : MonoBehaviour, IInjectContext, IPostInjectHandler
 
     private int buttonClickCount = 0;
 
+    public const string MyTextName = "MyText";
+    public const string MyButtonName = "MyButton";
+
     public void Configure(IInjectBinder binder)
     {
         textEvent = new EventSource<string>();
         buttonEvent = new EventSource<object>();
 
-        binder.BindEventSource("MyText", textEvent);
-        binder.BindEventSource("MyButton", buttonEvent);
+        binder.BindEventSource(MyTextName, textEvent);
+        binder.BindEventSource(MyButtonName, buttonEvent);
     }
 
     public void PostInject()
