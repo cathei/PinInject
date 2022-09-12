@@ -1,3 +1,5 @@
+// PinInject, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +13,9 @@ public class Test3UIContext : MonoBehaviour, IInjectContext, IPostInjectHandler
     private EventSource<object> buttonEvent;
 
     private int buttonClickCount = 0;
+
+    public const string UI3Text = "UI3Text";
+    public const string UI3Button = "UI3Button";
 
     public void Configure(IInjectBinder binder)
     {
