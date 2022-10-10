@@ -9,15 +9,15 @@ namespace Cathei.PinInject.Internal
 {
     public class ReflectionCache
     {
-        private static readonly Dictionary<Type, ReflectionCache> _cachePerType = new Dictionary<Type, ReflectionCache>();
+        private static readonly Dictionary<Type, ReflectionCache> CachePerType = new Dictionary<Type, ReflectionCache>();
 
         public static ReflectionCache Get(Type type)
         {
-            if (_cachePerType.TryGetValue(type, out var cache))
+            if (CachePerType.TryGetValue(type, out var cache))
                 return cache;
 
             cache = new ReflectionCache(type);
-            _cachePerType.Add(type, cache);
+            CachePerType.Add(type, cache);
             return cache;
         }
 
@@ -29,13 +29,13 @@ namespace Cathei.PinInject.Internal
         private readonly List<InjectableProperty> _injectables = null;
         private readonly List<ResolvableProperty> _resolvables = null;
 
-        private const BindingFlags memberBindingFlags =
+        private const BindingFlags MemberBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
-        private const BindingFlags nameBindingFlags =
+        private const BindingFlags NameBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
-        internal ReflectionCache(Type type)
+        private ReflectionCache(Type type)
         {
             if (type.BaseType != null)
             {
@@ -49,8 +49,8 @@ namespace Cathei.PinInject.Internal
                     _resolvables = new List<ResolvableProperty>(baseReflection._resolvables);
             }
 
-            var properties = type.GetProperties(memberBindingFlags);
-            var fields = type.GetFields(memberBindingFlags);
+            var properties = type.GetProperties(MemberBindingFlags);
+            var fields = type.GetFields(MemberBindingFlags);
 
             foreach (var prop in properties)
             {
@@ -60,7 +60,7 @@ namespace Cathei.PinInject.Internal
                 if (injectAttr != null)
                 {
                     if (prop.SetMethod == null)
-                        throw new InjectException($"Property {prop.Name} is marked as [Inject] without setter");
+                        throw new InjectionException($"Property {prop.Name} is marked as [Inject] without setter");
 
                     _injectables ??= new List<InjectableProperty>();
                     _injectables.Add(new InjectableProperty(
@@ -70,7 +70,7 @@ namespace Cathei.PinInject.Internal
                 if (resolveAttr != null)
                 {
                     if (prop.GetMethod == null)
-                        throw new InjectException($"Property {prop.Name} is marked as [Resolve] without getter");
+                        throw new InjectionException($"Property {prop.Name} is marked as [Resolve] without getter");
 
                     _resolvables ??= new List<ResolvableProperty>();
                     _resolvables.Add(new ResolvableProperty(prop.GetValue));
@@ -105,17 +105,17 @@ namespace Cathei.PinInject.Internal
         {
             if (attr.FromMember)
             {
-                var field = type.GetField(attr.Name, nameBindingFlags);
+                var field = type.GetField(attr.Name, NameBindingFlags);
 
                 if (field != null)
                     return obj => field.GetValue(obj).ToString();
 
-                var prop = type.GetProperty(attr.Name, nameBindingFlags);
+                var prop = type.GetProperty(attr.Name, NameBindingFlags);
 
                 if (prop != null)
                     return obj => prop.GetValue(obj).ToString();
 
-                throw new InjectException("Cannot find member " + attr.Name);
+                throw new InjectionException("Cannot find member " + attr.Name);
             }
             else
             {

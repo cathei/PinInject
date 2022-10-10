@@ -6,9 +6,5 @@ using UnityEngine;
 
 namespace Cathei.PinInject
 {
-    public interface IInjectBinder
-    {
-        void Bind<T>(T instance);
-        void Bind<T>(string name, T instance);
-    }
+    public interface ICompositionRoot { }
 }

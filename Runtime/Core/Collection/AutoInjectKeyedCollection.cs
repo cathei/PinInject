@@ -7,15 +7,15 @@ using System.Collections.ObjectModel;
 
 namespace Cathei.PinInject
 {
-    public abstract class InjectKeyedCollection<TKey, TItem> : KeyedCollection<TKey, TItem>, IPostInjectHandler
+    public abstract class AutoInjectKeyedCollection<TKey, TItem> : KeyedCollection<TKey, TItem>, IPostInjectHandler
         where TItem : class
     {
         [Inject]
-        private IInjectContainer _container;
+        private IDependencyContainer _container;
 
-        protected InjectKeyedCollection() : base() { }
-        protected InjectKeyedCollection(IEqualityComparer<TKey> comparer) : base(comparer) { }
-        protected InjectKeyedCollection(IEqualityComparer<TKey> comparer, int dictionaryCreationThreshold) : base(comparer, dictionaryCreationThreshold) { }
+        protected AutoInjectKeyedCollection() : base() { }
+        protected AutoInjectKeyedCollection(IEqualityComparer<TKey> comparer) : base(comparer) { }
+        protected AutoInjectKeyedCollection(IEqualityComparer<TKey> comparer, int dictionaryCreationThreshold) : base(comparer, dictionaryCreationThreshold) { }
 
         public virtual void PostInject()
         {

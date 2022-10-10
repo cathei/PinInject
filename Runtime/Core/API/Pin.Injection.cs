@@ -11,11 +11,11 @@ namespace Cathei.PinInject
 {
     public static partial class Pin
     {
-        private static readonly UnityInjectStrategy _injectStrategy = new UnityInjectStrategy();
+        private static readonly IStrategy Strategy = new UnityStrategy();
 
-        public static void Inject<TObject>(TObject obj, IInjectContainer container = null) where TObject : class
+        public static void Inject<TObject>(TObject obj, IDependencyContainer container = null) where TObject : class
         {
-            _injectStrategy.Inject(obj, container);
+            Strategy.Inject(obj, container);
         }
     }
 }

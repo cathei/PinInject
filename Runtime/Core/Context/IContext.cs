@@ -6,5 +6,8 @@ using UnityEngine;
 
 namespace Cathei.PinInject
 {
-    public interface IInjectRoot { }
+    public interface IContext
+    {
+        void Configure(DependencyRegistry registry);
+    }
 }

@@ -11,7 +11,7 @@ namespace Cathei.PinInject
 {
     public static partial class Pin
     {
-        internal struct PositionArgs
+        internal struct TransformArgs
         {
             public Vector3 position;
             public Quaternion rotation;
@@ -39,7 +39,7 @@ namespace Cathei.PinInject
         {
             instantiator ??= DefaultInstantiator;
 
-            return InstantiateInternal(prefab, parent, new PositionArgs
+            return InstantiateInternal(prefab, parent, new TransformArgs
             {
                 position = prefab.transform.position,
                 rotation = prefab.transform.rotation,
@@ -52,7 +52,7 @@ namespace Cathei.PinInject
         {
             instantiator ??= DefaultInstantiator;
 
-            return InstantiateInternal(prefab, parent, new PositionArgs
+            return InstantiateInternal(prefab, parent, new TransformArgs
             {
                 position = position,
                 rotation = rotation,
@@ -75,7 +75,7 @@ namespace Cathei.PinInject
 
         public static void Inject(GameObject obj)
         {
-            _injectStrategy.Inject(obj, GetSceneContainer(obj.scene));
+            Strategy.Inject(obj, GetSceneContainer(obj.scene));
         }
 
         public static void Inject<TComponent>(TComponent obj)
@@ -90,7 +90,7 @@ namespace Cathei.PinInject
         }
 
         private static GameObject InstantiateInternal(
-            GameObject prefab, Transform parent, PositionArgs args, InstantiatorDelegate instantiator)
+            GameObject prefab, Transform parent, TransformArgs args, InstantiatorDelegate instantiator)
         {
             bool savedActiveSelf = prefab.activeSelf;
 
@@ -100,7 +100,7 @@ namespace Cathei.PinInject
                 prefab.SetActive(false);
 
                 // prefab cached components
-                _injectStrategy.CacheInnerReferences(prefab);
+                prefab.CacheInnerReferences();
 
                 var instance = instantiator(prefab, parent);
 

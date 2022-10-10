@@ -3,14 +3,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cathei.PinInject
 {
     [DefaultExecutionOrder(-1000000000)]
-    public class SceneInjectRoot : MonoBehaviour, IInjectRoot
+    public class SceneCompositionRoot : MonoBehaviour, ICompositionRoot
     {
-        [SerializeField]
-        public SharedInjectRoot sharedRoot;
+        [SerializeField, FormerlySerializedAs("sharedRoot")]
+        public PersistentCompositionRoot parent;
 
         private void Awake()
         {

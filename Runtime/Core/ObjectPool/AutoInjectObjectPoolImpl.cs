@@ -11,14 +11,14 @@ namespace Cathei.PinInject.Internal
     /// <summary>
     /// game object pool that injects on instantiation
     /// </summary>
-    internal class InjectObjectPoolImpl : IInjectObjectPool
+    internal class AutoInjectObjectPoolImpl : IAutoInjectObjectPool
     {
         private readonly Transform _root;
         private readonly GameObject _prefab;
         private readonly IObjectPool<GameObject> _pool;
         private readonly Pin.InstantiatorDelegate _instantiator;
 
-        internal InjectObjectPoolImpl(
+        internal AutoInjectObjectPoolImpl(
             Transform root, GameObject prefab, int minInstance, int maxInstance,
             Pin.InstantiatorDelegate instantiator)
         {
@@ -37,7 +37,7 @@ namespace Cathei.PinInject.Internal
 
         public GameObject Spawn(Transform parent)
         {
-            return SpawnInternal(parent, new Pin.PositionArgs
+            return SpawnInternal(parent, new Pin.TransformArgs
             {
                 position = _prefab.transform.position,
                 rotation = _prefab.transform.rotation,
@@ -47,7 +47,7 @@ namespace Cathei.PinInject.Internal
 
         public GameObject Spawn(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true)
         {
-            return SpawnInternal(parent, new Pin.PositionArgs
+            return SpawnInternal(parent, new Pin.TransformArgs
             {
                 position = position,
                 rotation = rotation,
@@ -55,7 +55,7 @@ namespace Cathei.PinInject.Internal
             });
         }
 
-        private GameObject SpawnInternal(Transform parent, Pin.PositionArgs args)
+        private GameObject SpawnInternal(Transform parent, Pin.TransformArgs args)
         {
             var instance = _pool.Get();
 
@@ -102,9 +102,9 @@ namespace Cathei.PinInject.Internal
         }
     }
 
-    internal class InjectObjectPoolImpl<T> : InjectObjectPoolImpl, IInjectObjectPool<T> where T : Component
+    internal class AutoInjectObjectPoolImpl<T> : AutoInjectObjectPoolImpl, IAutoInjectObjectPool<T> where T : Component
     {
-        internal InjectObjectPoolImpl(
+        internal AutoInjectObjectPoolImpl(
                 Transform root, T prefab, int minInstance, int maxInstance,
                 Pin.InstantiatorDelegate instantiator)
             : base(root, prefab.gameObject, minInstance, maxInstance, instantiator)

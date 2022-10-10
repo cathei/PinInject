@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace Cathei.PinInject.UI
 {
     [RequireComponent(typeof(Button))]
-    public class UIButtonOnClickDispatcher : UIDispatcherBase<Button, object>
+    public class ButtonOnClickDispatcher : UIDispatcherBase<Button, object>
     {
         protected override void Register(IEventPublisher<object> publisher)
         {

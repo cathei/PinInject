@@ -10,32 +10,32 @@ namespace Cathei.PinInject.Internal
     /// <summary>
     /// This component will be attached to Prefab and cache innner reference to injectable Unity Object.
     /// </summary>
-    public class InjectCacheComponent : MonoBehaviour
+    public class HierarchyCacheComponent : MonoBehaviour
     {
         [Serializable]
         public struct InnerPrefabReferences
         {
-            public InjectContainerComponent container;
+            public DependencyContainerComponent container;
             public MonoBehaviour component;
         }
 
         [SerializeField]
-        private List<InnerPrefabReferences> _innerReferences = new List<InnerPrefabReferences>();
-
-        public List<InnerPrefabReferences> InnerReferences => _innerReferences;
+        private List<InnerPrefabReferences> innerReferences = new List<InnerPrefabReferences>();
 
         [SerializeField]
-        private int _resetCount = -1;
+        private int resetCount = -1;
+
+        public List<InnerPrefabReferences> InnerReferences => innerReferences;
 
         public bool IsValid
         {
-            get => _resetCount == Pin._resetCount;
+            get => resetCount == Pin._resetCount;
             set
             {
                 if (value)
-                    _resetCount = Pin._resetCount;
+                    resetCount = Pin._resetCount;
                 else
-                    _resetCount = -1;
+                    resetCount = -1;
             }
         }
     }

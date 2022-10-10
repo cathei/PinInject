@@ -17,7 +17,7 @@ namespace Cathei.PinInject.Editor
     [CustomPropertyDrawer(typeof(InjectNameSelectionAttribute))]
     public class InjectNameSelectionPropertyDrawer : PropertyDrawer
     {
-        private List<IInjectContext> _tempContexts = new List<IInjectContext>();
+        private List<IContext> _tempContexts = new List<IContext>();
         private List<DisplayContent> _tempContents = new List<DisplayContent>();
 
         private struct DisplayContent
@@ -26,12 +26,12 @@ namespace Cathei.PinInject.Editor
             public string value;
         }
 
-        private SceneInjectRoot FindSceneInjectRoot(Scene scene)
+        private SceneCompositionRoot FindSceneInjectRoot(Scene scene)
         {
             if (!scene.IsValid())
                 return null;
 
-            var roots = UnityEngine.Object.FindObjectsOfType<SceneInjectRoot>(false);
+            var roots = UnityEngine.Object.FindObjectsOfType<SceneCompositionRoot>(false);
 
             foreach (var root in roots)
             {
@@ -72,7 +72,7 @@ namespace Cathei.PinInject.Editor
                 return;
 
             var sceneRoot = FindSceneInjectRoot(component.gameObject.scene);
-            var sharedRoot = sceneRoot != null ? sceneRoot.sharedRoot : null;
+            var sharedRoot = sceneRoot != null ? sceneRoot.parent : null;
 
             _tempContents.Clear();
 

@@ -11,10 +11,10 @@ namespace Cathei.PinInject.Internal
     /// This component will be attached to any GameObject that has IInjectContext MonoBehaviour.
     /// This will track the container, until the GameObject is injected again.
     /// </summary>
-    public class InjectContainerComponent : MonoBehaviour
+    public class DependencyContainerComponent : MonoBehaviour
     {
-        internal readonly InjectContainerImpl _container = new InjectContainerImpl();
+        internal readonly DependencyContainer Container = new DependencyContainer();
 
-        [SerializeField] internal InjectContainerComponent parent;
+        [SerializeField] internal DependencyContainerComponent parent;
     }
 }

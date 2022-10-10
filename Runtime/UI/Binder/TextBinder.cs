@@ -1,12 +1,13 @@
-// PinInject, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
+#if PIN_TEXTMESHPRO
 
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Cathei.PinInject.UI
 {
-    [RequireComponent(typeof(Text))]
-    public class UITextBinder : UIBinderBase<Text, string>
+    [RequireComponent(typeof(TMP_Text))]
+    public class TextBinder : UIBinderBase<TMP_Text, string>
     {
         protected override void HandleEvent(string text)
         {
@@ -14,3 +15,5 @@ namespace Cathei.PinInject.UI
         }
     }
 }
+
+#endif

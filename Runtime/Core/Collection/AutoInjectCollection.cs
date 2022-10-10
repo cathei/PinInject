@@ -7,14 +7,14 @@ using System.Collections.ObjectModel;
 
 namespace Cathei.PinInject
 {
-    public class InjectCollection<TItem> : Collection<TItem>, IPostInjectHandler
+    public class AutoInjectCollection<TItem> : Collection<TItem>, IPostInjectHandler
         where TItem : class
     {
         [Inject]
-        private IInjectContainer _container;
+        private IDependencyContainer _container;
 
-        public InjectCollection() : base() { }
-        public InjectCollection(IList<TItem> list) : base(list) { }
+        public AutoInjectCollection() : base() { }
+        public AutoInjectCollection(IList<TItem> list) : base(list) { }
 
         public virtual void PostInject()
         {

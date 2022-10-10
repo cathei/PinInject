@@ -6,10 +6,10 @@ using System.Collections.Generic;
 
 namespace Cathei.PinInject
 {
-    public class InjectException : Exception
+    public class InjectionException : Exception
     {
-        public InjectException() { }
+        public InjectionException() { }
 
-        public InjectException(string message) : base(message) { }
+        public InjectionException(string message) : base(message) { }
     }
 }

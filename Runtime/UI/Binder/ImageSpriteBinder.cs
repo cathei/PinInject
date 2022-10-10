@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace Cathei.PinInject.UI
 {
     [RequireComponent(typeof(Image))]
-    public class UIImageSpriteBinder : UIBinderBase<Image, Sprite>
+    public class ImageSpriteBinder : UIBinderBase<Image, Sprite>
     {
         protected override void HandleEvent(Sprite sprite)
         {

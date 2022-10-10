@@ -6,23 +6,23 @@ using System.Collections.Generic;
 
 namespace Cathei.PinInject.Internal
 {
-    public class InjectContainerImpl : IInjectContainer, IInjectBinder
+    public class DependencyContainer : IDependencyContainer
     {
         // type -> constructor
         // public Dictionary<Type, Func<object>> _builders = new Dictionary<Type, Func<object>>();
 
         // type -> instance
-        public Dictionary<(Type, string), object> _instances = new Dictionary<(Type, string), object>();
+        private readonly Dictionary<(Type, string), object> _instances = new Dictionary<(Type, string), object>();
 
         // direct parent to current container
-        private IInjectContainer _parent;
+        private IDependencyContainer _parent;
 
-        public InjectContainerImpl()
+        public DependencyContainer()
         {
             Reset();
         }
 
-        internal void SetParent(IInjectContainer parent)
+        internal void SetParent(IDependencyContainer parent)
         {
             _parent = parent;
         }
@@ -34,7 +34,7 @@ namespace Cathei.PinInject.Internal
             _instances.Clear();
 
             // container itself is always binded
-            Bind<IInjectContainer>(this);
+            Add<IDependencyContainer>(this);
         }
 
         public object Resolve(Type type, string id)
@@ -57,17 +57,17 @@ namespace Cathei.PinInject.Internal
             return _parent.Resolve(type, id);
         }
 
-        public void Bind<T>(T instance)
+        internal void Add<T>(T instance)
         {
-            Bind(typeof(T), null, instance);
+            Add(typeof(T), null, instance);
         }
 
-        public void Bind<T>(string name, T instance)
+        internal void Add<T>(string name, T instance)
         {
-            Bind(typeof(T), name, instance);
+            Add(typeof(T), name, instance);
         }
 
-        private void Bind(Type type, string name, object instance)
+        private void Add(Type type, string name, object instance)
         {
             _instances.Add((type, name), instance);
         }

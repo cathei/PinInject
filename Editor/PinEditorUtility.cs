@@ -17,7 +17,7 @@ namespace Cathei.PinInject.Editor
         {
             // Create a custom game object
             GameObject go = new GameObject("SceneInjectRoot");
-            go.AddComponent<SceneInjectRoot>();
+            go.AddComponent<SceneCompositionRoot>();
 
             // Ensure it gets reparented if this was a context click (otherwise does nothing)
             GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
@@ -42,7 +42,7 @@ namespace Cathei.PinInject.Editor
             assetPath = AssetDatabase.GenerateUniqueAssetPath(assetPath);
 
             GameObject go = new GameObject("SharedInjectRoot");
-            go.AddComponent<SharedInjectRoot>();
+            go.AddComponent<PersistentCompositionRoot>();
 
             var asset = PrefabUtility.SaveAsPrefabAsset(go, assetPath);
 

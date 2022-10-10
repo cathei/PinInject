@@ -11,11 +11,11 @@ namespace Cathei.PinInject
 {
     public static partial class Pin
     {
-        private static readonly Dictionary<int, InjectContainerImpl> _sharedContainers = new Dictionary<int, InjectContainerImpl>();
-        private static readonly Dictionary<int, InjectContainerImpl> _sceneContainers = new Dictionary<int, InjectContainerImpl>();
+        private static readonly Dictionary<int, DependencyContainer> _persistentContainers = new Dictionary<int, DependencyContainer>();
+        private static readonly Dictionary<int, DependencyContainer> _sceneContainers = new Dictionary<int, DependencyContainer>();
 
         private static readonly List<GameObject> _tempRootObjects = new List<GameObject>();
-        private static readonly List<IInjectContext> _tempContexts = new List<IInjectContext>();
+        private static readonly List<IContext> _tempContexts = new List<IContext>();
 
         internal static int _resetCount = 0;
 
@@ -25,23 +25,23 @@ namespace Cathei.PinInject
             // for editor check
             _resetCount++;
 
-            _sharedContainers.Clear();
+            _persistentContainers.Clear();
             _sceneContainers.Clear();
         }
 
-        internal static IInjectContainer SetUpShared(SharedInjectRoot injectRoot)
+        internal static IDependencyContainer SetUpShared(PersistentCompositionRoot compositionRoot)
         {
-            if (injectRoot == null)
+            if (compositionRoot == null)
                 return null;
 
-            int instanceId = injectRoot.GetInstanceID();
+            int instanceId = compositionRoot.GetInstanceID();
 
-            if (_sharedContainers.TryGetValue(instanceId, out var container))
+            if (_persistentContainers.TryGetValue(instanceId, out var container))
                 return container;
 
-            var prefab = injectRoot.gameObject;
+            var prefab = compositionRoot.gameObject;
 
-            bool savedActiveSelf = injectRoot.gameObject.activeSelf;
+            bool savedActiveSelf = compositionRoot.gameObject.activeSelf;
 
             try
             {
@@ -52,16 +52,16 @@ namespace Cathei.PinInject
                 UnityEngine.Object.DontDestroyOnLoad(instance);
 
                 // inject root first
-                _injectStrategy.Inject(instance, null);
+                Strategy.Inject(instance, null);
 
-                var sharedContainer = _injectStrategy.GetOrAddContainerComponent(instance.gameObject);
+                var persistentContainer = instance.gameObject.GetOrAddContainerComponent();
 
-                // register shared container
-                _sharedContainers.Add(instanceId, sharedContainer._container);
+                // register persistent container
+                _persistentContainers.Add(instanceId, persistentContainer.Container);
 
                 instance.SetActive(savedActiveSelf);
 
-                return sharedContainer._container;
+                return persistentContainer.Container;
             }
             finally
             {
@@ -69,22 +69,22 @@ namespace Cathei.PinInject
             }
         }
 
-        internal static void SetUpScene(SceneInjectRoot injectRoot)
+        internal static void SetUpScene(SceneCompositionRoot compositionRoot)
         {
-            Scene scene = injectRoot.gameObject.scene;
+            Scene scene = compositionRoot.gameObject.scene;
 
             if (_sceneContainers.ContainsKey(scene.handle))
-                throw new InjectException("Scene should only contain one SceneInjectRoot");
+                throw new InjectionException("Scene should only contain one SceneInjectRoot");
 
-            var sharedContainer = SetUpShared(injectRoot.sharedRoot);
+            var sharedContainer = SetUpShared(compositionRoot.parent);
 
             // inject scene first
-            _injectStrategy.Inject(injectRoot.gameObject, sharedContainer);
+            Strategy.Inject(compositionRoot.gameObject, sharedContainer);
 
-            var sceneContainer = _injectStrategy.GetOrAddContainerComponent(injectRoot.gameObject);
+            var sceneContainer = compositionRoot.gameObject.GetOrAddContainerComponent();
 
             // register scene container
-            _sceneContainers.Add(scene.handle, sceneContainer._container);
+            _sceneContainers.Add(scene.handle, sceneContainer.Container);
 
             scene.GetRootGameObjects(_tempRootObjects);
 
@@ -93,25 +93,25 @@ namespace Cathei.PinInject
             {
                 GameObject rootObject = _tempRootObjects[i];
 
-                if (rootObject == injectRoot.gameObject)
+                if (rootObject == compositionRoot.gameObject)
                     continue;
 
                 Pin.Inject(rootObject);
             }
         }
 
-        internal static void TearDownScene(SceneInjectRoot injectRoot)
+        internal static void TearDownScene(SceneCompositionRoot compositionRoot)
         {
-            _sceneContainers.Remove(injectRoot.gameObject.scene.handle);
+            _sceneContainers.Remove(compositionRoot.gameObject.scene.handle);
         }
 
-        internal static InjectContainerImpl GetSceneContainer(Scene scene)
+        internal static DependencyContainer GetSceneContainer(Scene scene)
         {
             if (!scene.IsValid() || scene.buildIndex == -1)
                 return null;
 
             if (!_sceneContainers.TryGetValue(scene.handle, out var container))
-                throw new InjectException("There is no SceneInjectRoot in the scene");
+                throw new InjectionException("There is no SceneInjectRoot in the scene");
 
             return container;
         }

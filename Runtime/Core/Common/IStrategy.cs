@@ -3,12 +3,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-namespace Cathei.PinInject
+namespace Cathei.PinInject.Internal
 {
-    public interface IInjectContainer
+    public interface IStrategy
     {
-        object Resolve(Type type, string id);
+        void Inject(object obj, IDependencyContainer container);
     }
 }
