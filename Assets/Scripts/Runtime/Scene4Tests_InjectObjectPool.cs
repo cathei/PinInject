@@ -52,7 +52,7 @@ public class Scene4Tests_InjectObjectPool
     [Test]
     public void Test4Scene_Spawn()
     {
-        var pool = InjectObjectPool.Create(prefab, false);
+        var pool = AutoInjectObjectPool.Create(prefab, false);
 
         List<Test4LeafObject> list = new List<Test4LeafObject>();
 
@@ -83,7 +83,7 @@ public class Scene4Tests_InjectObjectPool
     [Test]
     public void Test4Scene_ReuseObject()
     {
-        var pool = InjectObjectPool.Create(prefab, false);
+        var pool = AutoInjectObjectPool.Create(prefab, false);
 
         for (int i = 0; i < 10; ++i)
         {

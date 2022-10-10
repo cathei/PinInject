@@ -12,7 +12,7 @@ using UnityEngine.TestTools;
 [TestFixture]
 public class InjectionUnitTests
 {
-    private UnityInjectStrategy _strategy = new UnityInjectStrategy();
+    private UnityStrategy _strategy = new UnityStrategy();
 
     [SetUp]
     public void Setup()
@@ -24,16 +24,16 @@ public class InjectionUnitTests
     public void Injection_EmptySceneRoot()
     {
         var go = new GameObject();
-        go.AddComponent<SceneInjectRoot>();
+        go.AddComponent<SceneCompositionRoot>();
 
         Pin.Inject(go);
 
-        var cache = go.GetComponent<InjectCacheComponent>();
+        var cache = go.GetComponent<HierarchyCacheComponent>();
 
         Assert.NotNull(cache);
         Assert.AreEqual(1, cache.InnerReferences.Count);
 
-        var container = go.GetComponent<InjectContainerComponent>();
+        var container = go.GetComponent<DependencyContainerComponent>();
 
         Assert.NotNull(container);
 

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using Cathei.PinInject;
 using UnityEngine;
 
-public class Test4SharedContext : MonoBehaviour, IInjectContext
+public class Test4SharedContext : MonoBehaviour, IContext
 {
-    public void Configure(IInjectBinder binder)
+    public void Configure(DependencyRegistry registry)
     {
-        binder.Bind(new BindWithNew("Test Scene 4"));
+        registry.Add(new BindWithNew("Test Scene 4"));
     }
 }

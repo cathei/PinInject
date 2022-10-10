@@ -502,7 +502,7 @@ MonoBehaviour:
   singularEnum:
     _stringValue: Fish
   flagsEnum:
-    _stringValue: Apple, Banana, Cherry, Eggplant, Grape
+    _stringValue: Apple, Banana
 --- !u!4 &1455673412
 Transform:
   m_ObjectHideFlags: 0

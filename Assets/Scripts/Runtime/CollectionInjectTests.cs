@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 
 [TestFixture]
-public class CollectionInjectTests : IInjectContext
+public class CollectionInjectTests : IContext
 {
     public class InjectableChild
     {
@@ -26,26 +26,26 @@ public class CollectionInjectTests : IInjectContext
         }
     }
 
-    public class InjectableParent : IInjectContext
+    public class InjectableParent : IContext
     {
         [Resolve]
-        public InjectCollection<InjectableChild> list;
+        public AutoInjectCollection<InjectableChild> list;
 
         private string _value;
 
         public InjectableParent(string value)
         {
-            list = new InjectCollection<InjectableChild>();
+            list = new AutoInjectCollection<InjectableChild>();
             _value = value;
         }
 
-        public void Configure(IInjectBinder binder)
+        public void Configure(DependencyRegistry registry)
         {
-            binder.Bind(_value);
+            registry.Add(_value);
         }
     }
 
-    public class InjectableKeyedParent : InjectKeyedCollection<int, InjectableChild>, IInjectContext
+    public class InjectableKeyedParent : AutoInjectKeyedCollection<int, InjectableChild>, IContext
     {
         private string _value;
 
@@ -54,9 +54,9 @@ public class CollectionInjectTests : IInjectContext
             _value = value;
         }
 
-        public void Configure(IInjectBinder binder)
+        public void Configure(DependencyRegistry registry)
         {
-            binder.Bind(_value);
+            registry.Add(_value);
         }
 
         protected override int GetKeyForItem(InjectableChild item)
@@ -66,7 +66,7 @@ public class CollectionInjectTests : IInjectContext
     }
 
     [Inject]
-    private IInjectContainer _container;
+    private IDependencyContainer _container;
 
     [SetUp]
     public void Setup()
@@ -75,10 +75,10 @@ public class CollectionInjectTests : IInjectContext
         Pin.Inject(this);
     }
 
-    public void Configure(IInjectBinder binder)
+    public void Configure(DependencyRegistry registry)
     {
-        binder.Bind<IBindWithInterface>(new BindWithInterface(8));
-        binder.Bind(new BindWithNew());
+        registry.Add<IBindWithInterface>(new BindWithInterface(8));
+        registry.Add(new BindWithNew());
     }
 
     [Test]

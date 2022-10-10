@@ -5,16 +5,16 @@ using System.Collections.Generic;
 using Cathei.PinInject;
 using UnityEngine;
 
-public class Test4GameObjectContext : MonoBehaviour, IInjectContext
+public class Test4GameObjectContext : MonoBehaviour, IContext
 {
     public int power;
     public int health;
     public Transform internalReference;
 
-    public void Configure(IInjectBinder binder)
+    public void Configure(DependencyRegistry registry)
     {
-        binder.Bind("Power", power);
-        binder.Bind("Health", health);
-        binder.Bind(internalReference);
+        registry.Add("Power", power);
+        registry.Add("Health", health);
+        registry.Add(internalReference);
     }
 }

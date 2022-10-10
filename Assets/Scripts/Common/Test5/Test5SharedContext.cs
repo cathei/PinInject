@@ -5,16 +5,16 @@ using System.Collections.Generic;
 using Cathei.PinInject;
 using UnityEngine;
 
-public class Test5SharedContext : MonoBehaviour, IInjectContext, IPostInjectHandler
+public class Test5SharedContext : MonoBehaviour, IContext, IPostInjectHandler
 {
     public Test5Singleton singleton;
 
     public List<string> initOrder = new List<string>();
 
-    public void Configure(IInjectBinder binder)
+    public void Configure(DependencyRegistry registry)
     {
-        binder.Bind(singleton);
-        binder.Bind(initOrder);
+        registry.Add(singleton);
+        registry.Add(initOrder);
     }
 
     public void PostInject()

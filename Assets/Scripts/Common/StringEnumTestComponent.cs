@@ -31,4 +31,14 @@ public class StringEnumTestComponent : MonoBehaviour
 {
     public StringEnum<TestEnum> singularEnum;
     public StringEnum<TestFlags> flagsEnum;
+
+    public void Start()
+    {
+        Debug.Log(singularEnum == TestEnum.Fish);
+        Debug.Log(TestEnum.Fish == singularEnum);
+        Debug.Log(flagsEnum == (TestFlags.Apple | TestFlags.Banana));
+
+        singularEnum = TestEnum.Cat;
+        flagsEnum = TestFlags.Apple | TestFlags.Grape;
+    }
 }

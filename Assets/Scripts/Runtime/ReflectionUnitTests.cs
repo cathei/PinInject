@@ -66,12 +66,12 @@ public class ReflectionUnitTests
     [Test]
     public void ReflectionCache_Assertions()
     {
-        var cacheComponent = ReflectionCache.Get(typeof(InjectCacheComponent));
+        var cacheComponent = ReflectionCache.Get(typeof(HierarchyCacheComponent));
 
         // cache component shouldn't be injected
         Assert.False(cacheComponent.HasAnyAttribute);
 
-        var containerComponent = ReflectionCache.Get(typeof(InjectContainerComponent));
+        var containerComponent = ReflectionCache.Get(typeof(DependencyContainerComponent));
 
         // container component shouldn't be injected
         Assert.False(containerComponent.HasAnyAttribute);
