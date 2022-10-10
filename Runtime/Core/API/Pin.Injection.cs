@@ -12,12 +12,18 @@ namespace Cathei.PinInject
 
         public delegate void ContextConfiguration(DependencyBinder binder);
 
+        /// <summary>
+        /// Inject an object. If it's GameObject or Component, all children will be injected as well.
+        /// </summary>
         public static void Inject<TObject>(TObject obj, ContextConfiguration config)
             where TObject : class
         {
             Inject(obj, null, config);
         }
 
+        /// <summary>
+        /// Inject an object. If it's GameObject or Component, all children will be injected as well.
+        /// </summary>
         public static void Inject<TObject>(
                 TObject obj, IDependencyContainer container = null, ContextConfiguration config = null)
             where TObject : class

@@ -38,7 +38,7 @@ namespace Cathei.PinInject.Internal
             // _builders.Clear();
             _instances.Clear();
 
-            // container itself is always binded
+            // container itself is always bound
             Bind<IDependencyContainer>(this);
         }
 

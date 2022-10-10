@@ -63,7 +63,7 @@ In PinInject, you can define `Shared`, `Scene` and `GameObject` context.
 
 Let's start from Scene context. It will applied to any component in the same scene.
 ```cs
-public class MySceneContext : MonoBehaviour, IInjectContext
+public class MySceneContext : MonoBehaviour, IInjectionContext
 {
     // assigned from inspector
     public MyPlayer player;
@@ -81,7 +81,7 @@ public class MySceneContext : MonoBehaviour, IInjectContext
     }
 }
 ```
-Then add `SceneCompositionRoot` to your scene (Right click on your Hierarchy and select `PinInject/Scene Inject Root`). This is component that triggers injection when scene loading. Any `IInjectContext` attached with `SceneCompositionRoot` considered Scene context. Add your `MySceneContext` on the same object.
+Then add `SceneCompositionRoot` to your scene (Right click on your Hierarchy and select `PinInject/Scene Composition Root`). This is component that triggers injection when scene loading. Any `IInjectionContext` attached with `SceneCompositionRoot` considered Scene context. Add your `MySceneContext` on the same object.
 
 Now you can add `[Inject]` to your field or property to inject in your component. Scene context will inject value to any GameObject that loaded with the scene, or instantiated using `Pin.Instantiate` to the scene.
 
@@ -102,12 +102,12 @@ public class MyComponent : MonoBehaviour
 ```
 Now you don't have to drag-drop your components except to scene context. `[Inject]` will work just like how Unity inspector injects value for you.
 
-## Defining Shared Context
-Shared Context is used to share across scenes. Shared Context is managed as asset and will be persistent once initialized. You can add `PersistentCompositionRoot` (Right click on your folder and select `Create/PinInject/Shared Inject Root`) as prefab.
+## Defining Persistent Context
+Persistent Context is used to share across scenes. Persistent Context is managed as asset and will be persistent once initialized. You can add `PersistentCompositionRoot` (Right click on your folder and select `Create/PinInject/Persistent Composition Root`) as prefab.
 
-Any `IInjectContext` Component attached with `PersistentCompositionRoot` becomes Shared Context and will affect every object in the referencing scene and instantiated to the scene. You can add child GameObject to it, then they will be persistent as well. It is useful for singleton pattern.
+Any `IInjectionContext` Component attached with `PersistentCompositionRoot` becomes Shared Context and will affect every object in the referencing scene and instantiated to the scene. You can add child GameObject to it, then they will be persistent as well. It is useful for singleton pattern.
 ```cs
-public class MySharedContext : MonoBehaviour, IInjectContext
+public class MyPersistentContext : MonoBehaviour, IInjectionContext
 {
     // PersistentCompositionRoot prefab inner reference
     public GameManager gameManager;
@@ -122,15 +122,15 @@ public class MySharedContext : MonoBehaviour, IInjectContext
     }
 }
 ```
-Add `MySharedContext` to `PersistentCompositionRoot`, now reference `PersistentCompositionRoot` from your `SceneCompositionRoot`. Then the setup is done.
+Add `MyPersistentContext` to `PersistentCompositionRoot`, now reference `PersistentCompositionRoot` as `parent` from your `SceneCompositionRoot`. Then the setup is done.
 
  Now you don't have to worry about referencing singleton as `GameManager.Instance` or such. You can easily type `[Inject] GameManager gameManager`.
 
 ## Defining Scene Context and GameObject Context
-Any `IInjectContext` Component that is not attached to `SceneCompositionRoot` or `PersistentCompositionRoot` will be considered GameObject Context. GameObject context will be applied to any MonoBehaviour on same transform or it's children.
+Any `IInjectionContext` Component that is not attached to `SceneCompositionRoot` or `PersistentCompositionRoot` will be considered GameObject Context. GameObject context will be applied to any MonoBehaviour on same transform or it's children.
 
 ```cs
-public class MyGameObjectContext : MonoBehaviour, IInjectContext
+public class MyGameObjectContext : MonoBehaviour, IInjectionContext
 {
     // injected from shared context
     [Inject]
@@ -163,7 +163,7 @@ Your object will be injected before `Awake` get called. For C# object or manuall
 ## Injection Order
 For GameObjects and Components, injection order is deterministic. PinInject follows same order as Unity Hierarchy and Inspector view, from top to bottom. So if your GameObject is higher in Hierarchy, it will be injected first. If your component is higher from Inspector, it will be injected first.
 
-For scope of a single C# object or a Component, the execution order is `[Inject] > IContext.Configure > [Resolve] > IPostInjectHandler.PostInject`.
+For scope of a single C# object or a Component, the execution order is `[Inject] > IInjectionContext.Configure > [Resolve] > IPostInjectHandler.PostInject`.
 
 ## Injecting into C# object
 Just like when you inject to GameObject, you can create hierarchical context for regular C# objects. By using `ResolveAttribute`, you can inject recursively to your children, applying context.
@@ -179,7 +179,7 @@ public class InjectedChild : IPostInjectHandler
     }
 }
 
-public class InjectedParent : IInjectContext
+public class InjectedParent : IInjectionContext
 {
     private string value = "injection completed";
 
@@ -203,17 +203,17 @@ PinInject attaches small component to your prefab to cache components, so it wil
 Also of course, it caches reflection result to improve performance. Same type will not be reflected again.
 
 ## Using Collections
-There is `InjectCollection` and `InjectKeyedCollection`. These collections will inject to collection's member automatially when item is added to collection.
+There is `AutoInjectCollection` and `AutoInjectKeyedCollection`. These collections will inject to collection's member automatically when item is added to collection.
 
 > **Warning**  
-> These collections should not contain `GameObject` or `Component`.
+> These collections should not be used with `GameObject` or `Component`.
 
 ## Using Object Pools
-PinInject includes `GenericObjectPool` for C# objects, and `InjectObjectPool` for GameObjects. `InjectObjectPool` automatically injects when you call `Spawn`.
+PinInject includes `GenericObjectPool` for C# objects, and `AutoInjectObjectPool` for GameObjects. `AutoInjectObjectPool` automatically injects when you call `Spawn`.
 
 ## Using UI Binding
 ```cs
-public class MyContext : MonoBehaviour, IInjectContext, IPostInjectHandler
+public class MyContext : MonoBehaviour, IInjectionContext, IPostInjectHandler
 {
     private EventSource<string> textEvent;
     private EventSource<object> buttonEvent;
@@ -244,6 +244,6 @@ public class MyContext : MonoBehaviour, IInjectContext, IPostInjectHandler
     }
 }
 ```
-First add `MyContext` to parent object of `Text` and `Button`. Add `UITextBinder` on `Text` and set identifier to `MyText`. Then add `UIButtonOnClickDispatcher` on `Button` and set identifier to `MyButton`. Now you can see `Text` changes when `Button` clicked.
+First add `MyContext` to parent object of `Text` and `Button`. Add `LegacyTextBinder` on `Text` and set identifier to `MyText`. Then add `ButtonOnClickDispatcher` on `Button` and set identifier to `MyButton`. Now you can see `Text` changes when `Button` clicked.
 
 Have you noticed you didn't have to drag-drop anything from Unity Inspector? Using UI binding with PinInject, you can make your UI structure flexible and easily modifiable.

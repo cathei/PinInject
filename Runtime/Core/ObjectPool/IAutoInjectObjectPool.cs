@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Cathei.PinInject
 {
+    /// <summary>
+    /// Game object pool that injects on Spawn.
+    /// </summary>
     public interface IAutoInjectObjectPool<T> : IDisposable
     {
         int CountInactive { get; }

@@ -4,6 +4,9 @@ using Cathei.PinInject.Internal;
 
 namespace Cathei.PinInject
 {
+    /// <summary>
+    /// Dependency binder used for configuration of IInjectionContext.
+    /// </summary>
     public readonly ref struct DependencyBinder
     {
         private readonly DependencyContainer _container;
@@ -15,6 +18,10 @@ namespace Cathei.PinInject
             _container = container;
         }
 
+        /// <summary>
+        /// Bind a object instance as a given type.
+        /// Manually specify generic argument to use interface type.
+        /// </summary>
         public void Bind<T>(T instance)
         {
             if (_container == null)
@@ -23,6 +30,10 @@ namespace Cathei.PinInject
             _container.Bind(instance);
         }
 
+        /// <summary>
+        /// Bind a object instance as a given type and name.
+        /// Manually specify generic argument to use interface type.
+        /// </summary>
         public void Bind<T>(string name, T instance)
         {
             if (_container == null)

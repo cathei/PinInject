@@ -2,5 +2,8 @@
 
 namespace Cathei.PinInject
 {
+    /// <summary>
+    /// Represents composition root.
+    /// </summary>
     public interface ICompositionRoot { }
 }

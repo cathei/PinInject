@@ -31,6 +31,9 @@ namespace Cathei.PinInject
 
         public delegate GameObject Instantiator(GameObject prefab, Transform parent);
 
+        /// <summary>
+        /// Instantiate and inject a GameObject. Context of parent transform will be used.
+        /// </summary>
         public static GameObject Instantiate(
             GameObject prefab, Transform parent = null, ContextConfiguration config = null, Instantiator instantiator = null)
         {
@@ -42,6 +45,9 @@ namespace Cathei.PinInject
             }, config, instantiator);
         }
 
+        /// <summary>
+        /// Instantiate and inject a GameObject. Context of parent transform will be used.
+        /// </summary>
         public static GameObject Instantiate(
             GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true,
             ContextConfiguration config = null, Instantiator instantiator = null)
@@ -54,6 +60,9 @@ namespace Cathei.PinInject
             }, config, instantiator);
         }
 
+        /// <summary>
+        /// Instantiate and inject a GameObject. Context of parent transform will be used.
+        /// </summary>
         public static T Instantiate<T>(
                 T prefab, Transform parent = null, ContextConfiguration config = null, Instantiator instantiator = null)
             where T : Component
@@ -61,6 +70,9 @@ namespace Cathei.PinInject
             return Instantiate(prefab.gameObject, parent, config, instantiator).GetComponent<T>();
         }
 
+        /// <summary>
+        /// Instantiate and inject a GameObject. Context of parent transform will be used.
+        /// </summary>
         public static T Instantiate<T>(
                 T prefab, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true,
                 ContextConfiguration config = null, Instantiator instantiator = null)

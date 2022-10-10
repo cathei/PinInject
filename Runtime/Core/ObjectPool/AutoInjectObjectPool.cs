@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Cathei.PinInject
 {
     /// <summary>
-    /// game object pool that injects on instantiation
+    /// Game object pool that injects on Spawn.
     /// </summary>
     public static class AutoInjectObjectPool
     {

@@ -27,7 +27,7 @@ namespace Cathei.PinInject
             _sceneContainers.Clear();
         }
 
-        internal static IDependencyContainer SetUpShared(PersistentCompositionRoot compositionRoot)
+        internal static IDependencyContainer SetUpPersistent(PersistentCompositionRoot compositionRoot)
         {
             if (compositionRoot == null)
                 return null;
@@ -74,7 +74,7 @@ namespace Cathei.PinInject
             if (_sceneContainers.ContainsKey(scene.handle))
                 throw new InjectionException("Scene should only contain one SceneInjectRoot");
 
-            var sharedContainer = SetUpShared(compositionRoot.parent);
+            var sharedContainer = SetUpPersistent(compositionRoot.parent);
 
             // inject scene first
             UnityStrategy.Inject(compositionRootObject, sharedContainer, null);

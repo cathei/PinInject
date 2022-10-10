@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Cathei.PinInject
 {
+    /// <summary>
+    /// Represents a persistent composition root that persists on Application lifecycle.
+    /// </summary>
     public class PersistentCompositionRoot : MonoBehaviour, ICompositionRoot
     {
         private void Awake()

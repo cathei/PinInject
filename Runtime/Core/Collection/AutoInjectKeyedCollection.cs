@@ -5,6 +5,10 @@ using System.Collections.ObjectModel;
 
 namespace Cathei.PinInject
 {
+    /// <summary>
+    /// The keyed collection that automatically injects Item on Add or Insert.
+    /// Should be used with [Resolve] tag to operate properly.
+    /// </summary>
     public abstract class AutoInjectKeyedCollection<TKey, TItem> : KeyedCollection<TKey, TItem>, IPostInjectHandler
         where TItem : class
     {
