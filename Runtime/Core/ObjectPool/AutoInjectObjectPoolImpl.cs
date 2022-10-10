@@ -35,27 +35,29 @@ namespace Cathei.PinInject.Internal
 
         public int CountInactive => _pool.CountInactive;
 
-        public GameObject Spawn(Transform parent)
+        public GameObject Spawn(Transform parent, Pin.ContextConfiguration config = null)
         {
             return SpawnInternal(parent, new Pin.TransformArgs
             {
                 position = _prefab.transform.position,
                 rotation = _prefab.transform.rotation,
                 worldSpace = false
-            });
+            }, config);
         }
 
-        public GameObject Spawn(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true)
+        public GameObject Spawn(Vector3 position, Quaternion rotation,
+            Transform parent = null, bool worldSpace = true, Pin.ContextConfiguration config = null)
         {
             return SpawnInternal(parent, new Pin.TransformArgs
             {
                 position = position,
                 rotation = rotation,
                 worldSpace = worldSpace
-            });
+            }, config);
         }
 
-        private GameObject SpawnInternal(Transform parent, Pin.TransformArgs args)
+        private GameObject SpawnInternal(
+            Transform parent, Pin.TransformArgs args, Pin.ContextConfiguration config = null)
         {
             var instance = _pool.Get();
 
@@ -65,7 +67,7 @@ namespace Cathei.PinInject.Internal
 
             args.Apply(instance.transform);
 
-            Pin.Inject(instance);
+            Pin.Inject(instance, config);
 
             instance.SetActive(true);
             return instance;
@@ -110,15 +112,16 @@ namespace Cathei.PinInject.Internal
             : base(root, prefab.gameObject, minInstance, maxInstance, instantiator)
         { }
 
-        public new T Spawn(Transform parent)
+        public new T Spawn(Transform parent, Pin.ContextConfiguration config = null)
         {
-            var instance = base.Spawn(parent);
+            var instance = base.Spawn(parent, config);
             return instance.GetComponent<T>();
         }
 
-        public new T Spawn(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true)
+        public new T Spawn(Vector3 position, Quaternion rotation,
+            Transform parent = null, bool worldSpace = true, Pin.ContextConfiguration config = null)
         {
-            var instance = base.Spawn(position, rotation, parent, worldSpace);
+            var instance = base.Spawn(position, rotation, parent, worldSpace, config);
             return instance.GetComponent<T>();
         }
 

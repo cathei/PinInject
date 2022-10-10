@@ -9,8 +9,9 @@ namespace Cathei.PinInject
     {
         int CountInactive { get; }
 
-        T Spawn(Transform parent);
-        T Spawn(Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true);
+        T Spawn(Transform parent, Pin.ContextConfiguration config = null);
+        T Spawn(Vector3 position, Quaternion rotation,
+            Transform parent = null, bool worldSpace = true, Pin.ContextConfiguration config = null);
 
         void Despawn(T instance);
         void Clear();
