@@ -107,4 +107,16 @@ public class Scene2Tests_Instantiation
         Assert.AreSame(leaf23.transform, leaf21.internalRef);
         Assert.AreSame(leaf22.transform, nestedLeaf22.internalRef);
     }
+
+    [Test]
+    public void Test2Scene_OptionalConfigConflict()
+    {
+        Assert.Throws<InjectionException>(() => Pin.Instantiate(originalPrefab, config: binder =>
+        {
+            // this binding should not override anything
+            // because the prefab game object context is given
+            binder.Bind("Power", 100);
+            binder.Bind("Health", 200);
+        }));
+    }
 }

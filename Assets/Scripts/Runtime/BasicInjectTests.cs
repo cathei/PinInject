@@ -49,4 +49,16 @@ public class BasicInjectTests : IInjectionContext
         Assert.AreEqual(obj1.bindedField, obj2.bindedField);
         Assert.AreEqual(obj1.BindedProperty, obj2.BindedProperty);
     }
+
+    [Test]
+    public void BasicInject_OptionalConfig()
+    {
+        var obj = new FlatInjectableClass();
+
+        Pin.Inject(obj, _container, binder =>
+            binder.Bind<IBindWithInterface>(new BindWithInterface(999)));
+
+        Assert.AreEqual(999, obj.bindedField.Value);
+        Assert.AreEqual("Default Value", obj.BindedProperty.Value);
+    }
 }

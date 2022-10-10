@@ -2,6 +2,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using Cathei.PinInject;
 using NUnit.Framework;
 using TMPro;
@@ -108,5 +109,29 @@ public class Scene4Tests_InjectObjectPool
         }
 
         pool.Dispose();
+    }
+
+    [Test]
+    public void Test4Scene_OptionalConfig()
+    {
+        var pool = AutoInjectObjectPool.Create(prefab, false);
+
+        for (int i = 0; i < 10; ++i)
+        {
+            var spawned = pool.Spawn(parentA, binder =>
+            {
+                int originalPower = binder.Container.Resolve<int>("Power");
+
+                binder.Bind("Power", originalPower + i);
+                binder.Bind(new BindWithNew("Test Scene 4 - " + i));
+            });
+
+            Assert.AreEqual(100 + i, spawned.Power);
+            Assert.AreEqual(50, spawned.Health);
+            Assert.AreEqual(parentAInternal, spawned.internalRef);
+            Assert.AreEqual("Test Scene 4 - " + i, spawned.bindedNew.Value);
+
+            pool.Despawn(spawned);
+        }
     }
 }
