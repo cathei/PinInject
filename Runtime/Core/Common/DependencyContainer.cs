@@ -42,24 +42,21 @@ namespace Cathei.PinInject.Internal
             Bind<IDependencyContainer>(this);
         }
 
-        public object Resolve(Type type, string id)
+        /// <summary>
+        /// Resolve given type and name, returns the resolved object.
+        /// returns null if there is no binding.
+        /// </summary>
+        public object Resolve(Type type, string name)
         {
-            if (_instances.TryGetValue((type, id), out var instance))
+            if (_instances.TryGetValue((type, name), out var instance))
                 return instance;
-
-            // if (_builders.TryGetValue(type, out var builder))
-            // {
-            //     instance = builder();
-            //     _instances.Add(type, instance);
-            //     return instance;
-            // }
 
             // failed to resolve dependency
             if (_parent == null)
                 return null;
 
             // tail call would be optimized
-            return _parent.Resolve(type, id);
+            return _parent.Resolve(type, name);
         }
 
         internal void Bind<T>(T instance)
@@ -74,17 +71,15 @@ namespace Cathei.PinInject.Internal
 
         private void Bind(Type type, string name, object instance)
         {
-            _instances.Add((type, name), instance);
+            var key = (type, name);
+
+            if (_instances.ContainsKey(key))
+            {
+                throw new InjectionException(
+                    $"Same binding is already provided in this context! Type: {type}, Name: {name}");
+            }
+
+            _instances.Add(key, instance);
         }
-
-        // public void Bind<T>() where T : new()
-        // {
-        //     _builders.Add(typeof(T), () => new T());
-        // }
-
-        // public void Bind<T, TImpl>() where TImpl : T, new()
-        // {
-        //     _builders.Add(typeof(T), () => new TImpl());
-        // }
     }
 }

@@ -32,45 +32,41 @@ namespace Cathei.PinInject
         public delegate GameObject Instantiator(GameObject prefab, Transform parent);
 
         public static GameObject Instantiate(
-            GameObject prefab, Transform parent = null, Instantiator instantiator = null, ContextConfiguration config = null)
+            GameObject prefab, Transform parent = null, ContextConfiguration config = null, Instantiator instantiator = null)
         {
-            instantiator ??= DefaultInstantiator;
-
             return InstantiateInternal(prefab, parent, new TransformArgs
             {
                 position = prefab.transform.position,
                 rotation = prefab.transform.rotation,
                 worldSpace = false
-            }, instantiator, config);
+            }, config, instantiator);
         }
 
         public static GameObject Instantiate(
             GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true,
-            Instantiator instantiator = null, ContextConfiguration config = null)
+            ContextConfiguration config = null, Instantiator instantiator = null)
         {
-            instantiator ??= DefaultInstantiator;
-
             return InstantiateInternal(prefab, parent, new TransformArgs
             {
                 position = position,
                 rotation = rotation,
                 worldSpace = worldSpace
-            }, instantiator, config);
+            }, config, instantiator);
         }
 
         public static T Instantiate<T>(
-                T prefab, Transform parent = null, Instantiator instantiator = null, ContextConfiguration config = null)
+                T prefab, Transform parent = null, ContextConfiguration config = null, Instantiator instantiator = null)
             where T : Component
         {
-            return Instantiate(prefab.gameObject, parent, instantiator, config).GetComponent<T>();
+            return Instantiate(prefab.gameObject, parent, config, instantiator).GetComponent<T>();
         }
 
         public static T Instantiate<T>(
                 T prefab, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true,
-                Instantiator instantiator = null, ContextConfiguration config = null)
+                ContextConfiguration config = null, Instantiator instantiator = null)
             where T : Component
         {
-            return Instantiate(prefab.gameObject, position, rotation, parent, worldSpace, instantiator, config).GetComponent<T>();
+            return Instantiate(prefab.gameObject, position, rotation, parent, worldSpace, config, instantiator).GetComponent<T>();
         }
 
         internal static GameObject DefaultInstantiator(GameObject prefab, Transform parent)
@@ -79,8 +75,10 @@ namespace Cathei.PinInject
         }
 
         private static GameObject InstantiateInternal(
-            GameObject prefab, Transform parent, TransformArgs args, Instantiator instantiator, ContextConfiguration config)
+            GameObject prefab, Transform parent, TransformArgs args, ContextConfiguration config, Instantiator instantiator)
         {
+            instantiator ??= DefaultInstantiator;
+
             bool savedActiveSelf = prefab.activeSelf;
 
             try
