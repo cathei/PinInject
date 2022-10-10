@@ -11,10 +11,10 @@ using UnityEngine.TestTools;
 using UnityEngine.UI;
 
 /// <summary>
-/// Test4 scene is for testing SharedInjectRoot and singletons.
+/// Test5 scene is for testing PersistentCompositionRoot and singletons.
 /// </summary>
 [TestFixture]
-public class Scene5Tests_SharedRoot
+public class Scene5Tests_PersistentRoot
 {
     private bool initialized = false;
 

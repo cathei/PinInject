@@ -12,7 +12,7 @@ using UnityEngine.TestTools;
 using UnityEngine.UI;
 
 /// <summary>
-/// Test4 scene is for testing InjectObjectPool.
+/// Test4 scene is for testing AutoInjectObjectPool.
 /// </summary>
 [TestFixture]
 public class Scene4Tests_InjectObjectPool
