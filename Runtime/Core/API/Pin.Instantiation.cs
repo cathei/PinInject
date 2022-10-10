@@ -1,11 +1,7 @@
 // PinInject, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Cathei.PinInject.Internal;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace Cathei.PinInject
