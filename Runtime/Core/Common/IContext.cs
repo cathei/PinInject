@@ -8,6 +8,6 @@ namespace Cathei.PinInject
 {
     public interface IContext
     {
-        void Configure(DependencyRegistry registry);
+        void Configure(DependencyBinder binder);
     }
 }

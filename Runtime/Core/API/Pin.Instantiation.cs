@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Cathei.PinInject.Internal;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace Cathei.PinInject
 {
@@ -32,10 +33,10 @@ namespace Cathei.PinInject
             }
         }
 
-        public delegate GameObject InstantiatorDelegate(GameObject prefab, Transform parent);
+        public delegate GameObject Instantiator(GameObject prefab, Transform parent);
 
         public static GameObject Instantiate(
-            GameObject prefab, Transform parent = null, InstantiatorDelegate instantiator = null)
+            GameObject prefab, Transform parent = null, Instantiator instantiator = null, ContextConfiguration config = null)
         {
             instantiator ??= DefaultInstantiator;
 
@@ -44,11 +45,12 @@ namespace Cathei.PinInject
                 position = prefab.transform.position,
                 rotation = prefab.transform.rotation,
                 worldSpace = false
-            }, instantiator);
+            }, instantiator, config);
         }
 
         public static GameObject Instantiate(
-            GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true, InstantiatorDelegate instantiator = null)
+            GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true,
+            Instantiator instantiator = null, ContextConfiguration config = null)
         {
             instantiator ??= DefaultInstantiator;
 
@@ -57,40 +59,31 @@ namespace Cathei.PinInject
                 position = position,
                 rotation = rotation,
                 worldSpace = worldSpace
-            }, instantiator);
+            }, instantiator, config);
         }
 
         public static T Instantiate<T>(
-            T prefab, Transform parent = null, InstantiatorDelegate instantiator = null) where T : Component
-        {
-            return Instantiate(prefab.gameObject, parent, instantiator).GetComponent<T>();
-        }
-
-        public static T Instantiate<T>(
-            T prefab, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true, InstantiatorDelegate instantiator = null)
+                T prefab, Transform parent = null, Instantiator instantiator = null, ContextConfiguration config = null)
             where T : Component
         {
-            return Instantiate(prefab.gameObject, position, rotation, parent, worldSpace, instantiator).GetComponent<T>();
+            return Instantiate(prefab.gameObject, parent, instantiator, config).GetComponent<T>();
         }
 
-        public static void Inject(GameObject obj)
+        public static T Instantiate<T>(
+                T prefab, Vector3 position, Quaternion rotation, Transform parent = null, bool worldSpace = true,
+                Instantiator instantiator = null, ContextConfiguration config = null)
+            where T : Component
         {
-            Strategy.Inject(obj, GetSceneContainer(obj.scene));
-        }
-
-        public static void Inject<TComponent>(TComponent obj)
-            where TComponent : Component
-        {
-            Inject(obj.gameObject);
+            return Instantiate(prefab.gameObject, position, rotation, parent, worldSpace, instantiator, config).GetComponent<T>();
         }
 
         internal static GameObject DefaultInstantiator(GameObject prefab, Transform parent)
         {
-            return GameObject.Instantiate(prefab, parent);
+            return Object.Instantiate(prefab, parent);
         }
 
         private static GameObject InstantiateInternal(
-            GameObject prefab, Transform parent, TransformArgs args, InstantiatorDelegate instantiator)
+            GameObject prefab, Transform parent, TransformArgs args, Instantiator instantiator, ContextConfiguration config)
         {
             bool savedActiveSelf = prefab.activeSelf;
 
@@ -106,7 +99,7 @@ namespace Cathei.PinInject
 
                 args.Apply(instance.transform);
 
-                Inject(instance);
+                InjectInternal(instance, GetSceneContainer(instance.scene), config);
 
                 instance.SetActive(savedActiveSelf);
 

@@ -16,11 +16,11 @@ namespace Cathei.PinInject.Internal
         private readonly Transform _root;
         private readonly GameObject _prefab;
         private readonly IObjectPool<GameObject> _pool;
-        private readonly Pin.InstantiatorDelegate _instantiator;
+        private readonly Pin.Instantiator _instantiator;
 
         internal AutoInjectObjectPoolImpl(
             Transform root, GameObject prefab, int minInstance, int maxInstance,
-            Pin.InstantiatorDelegate instantiator)
+            Pin.Instantiator instantiator)
         {
             _root = root;
             _prefab = prefab;
@@ -106,7 +106,7 @@ namespace Cathei.PinInject.Internal
     {
         internal AutoInjectObjectPoolImpl(
                 Transform root, T prefab, int minInstance, int maxInstance,
-                Pin.InstantiatorDelegate instantiator)
+                Pin.Instantiator instantiator)
             : base(root, prefab.gameObject, minInstance, maxInstance, instantiator)
         { }
 

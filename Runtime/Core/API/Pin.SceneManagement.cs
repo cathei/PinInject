@@ -96,7 +96,7 @@ namespace Cathei.PinInject
                 if (rootObject == compositionRoot.gameObject)
                     continue;
 
-                Pin.Inject(rootObject);
+                Inject(rootObject);
             }
         }
 

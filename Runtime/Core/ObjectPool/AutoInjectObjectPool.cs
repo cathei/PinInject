@@ -37,7 +37,7 @@ namespace Cathei.PinInject
         }
 
         public static IAutoInjectObjectPool Create(
-            GameObject prefab, Pin.InstantiatorDelegate instantiator,
+            GameObject prefab, Pin.Instantiator instantiator,
             int minInstance = 0, int maxInstance = 100, bool isPersistent = true)
         {
             var root = CreateRoot(prefab, isPersistent);
@@ -58,7 +58,7 @@ namespace Cathei.PinInject
         }
 
         public static IAutoInjectObjectPool<T> Create<T>(
-                T prefab, Pin.InstantiatorDelegate instantiator,
+                T prefab, Pin.Instantiator instantiator,
                 int minInstance = 0, int maxInstance = 100, bool isPersistent = true)
             where T : Component
         {

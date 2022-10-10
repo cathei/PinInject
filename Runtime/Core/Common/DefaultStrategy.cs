@@ -26,7 +26,7 @@ namespace Cathei.PinInject.Internal
             _recursiveCheck.Add(obj);
 
             IDependencyContainer container = baseContainer;
-            DependencyRegistry registry = default;
+            DependencyBinder binder = default;
 
             // another depth of injection
             if (obj is IContext)
@@ -35,20 +35,20 @@ namespace Cathei.PinInject.Internal
                 childContainer.SetParent(baseContainer);
 
                 container = childContainer;
-                registry = new DependencyRegistry(childContainer);
+                binder = new DependencyBinder(childContainer);
             }
 
-            InjectBindResolve(obj, container, registry);
+            InjectBindResolve(obj, container, binder);
         }
 
-        internal void InjectBindResolve(object obj, IDependencyContainer container, DependencyRegistry registry)
+        internal void InjectBindResolve(object obj, IDependencyContainer container, DependencyBinder binder)
         {
             var reflection = ReflectionCache.Get(obj.GetType());
 
             InjectProperties(reflection, obj, container);
 
             if (obj is IContext context)
-                context.Configure(registry);
+                context.Configure(binder);
 
             ResolveProperties(reflection, obj, container);
 

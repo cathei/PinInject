@@ -30,7 +30,7 @@ namespace Cathei.PinInject.Internal
             foreach (var reference in cacheComponent.InnerReferences)
             {
                 IDependencyContainer container;
-                DependencyRegistry registry;
+                DependencyBinder binder;
 
                 if (reference.container != null)
                 {
@@ -46,15 +46,15 @@ namespace Cathei.PinInject.Internal
                     }
 
                     container = reference.container.Container;
-                    registry = new DependencyRegistry(reference.container.Container);
+                    binder = new DependencyBinder(reference.container.Container);
                 }
                 else
                 {
                     container = baseContainer;
-                    registry = default;
+                    binder = default;
                 }
 
-                InjectBindResolve(reference.component, container, registry);
+                InjectBindResolve(reference.component, container, binder);
             }
 
             // when it's injected, references should be invalidated

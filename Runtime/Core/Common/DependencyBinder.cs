@@ -7,29 +7,29 @@ using UnityEngine;
 
 namespace Cathei.PinInject
 {
-    public readonly ref struct DependencyRegistry
+    public readonly ref struct DependencyBinder
     {
         private readonly DependencyContainer _container;
 
-        public DependencyRegistry(DependencyContainer container)
+        public DependencyBinder(DependencyContainer container)
         {
             _container = container;
         }
 
-        public void Add<T>(T instance)
+        public void Bind<T>(T instance)
         {
             if (_container == null)
                 throw new InjectionException("Binding failed: no container assigned!");
 
-            _container.Add(instance);
+            _container.Bind(instance);
         }
 
-        public void Add<T>(string name, T instance)
+        public void Bind<T>(string name, T instance)
         {
             if (_container == null)
                 throw new InjectionException("Binding failed: no container assigned!");
 
-            _container.Add(name, instance);
+            _container.Bind(name, instance);
         }
     }
 }

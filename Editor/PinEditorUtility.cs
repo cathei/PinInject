@@ -12,11 +12,11 @@ namespace Cathei.PinInject.Editor
 {
     public static class PinEditorUtility
     {
-        [MenuItem("GameObject/PinInject/Scene Inject Root", false, 10)]
+        [MenuItem("GameObject/PinInject/Scene Composition Root", false, 10)]
         public static void CreateSceneInjectRoot(MenuCommand menuCommand)
         {
             // Create a custom game object
-            GameObject go = new GameObject("SceneInjectRoot");
+            GameObject go = new GameObject("SceneCompositionRoot");
             go.AddComponent<SceneCompositionRoot>();
 
             // Ensure it gets reparented if this was a context click (otherwise does nothing)
@@ -27,7 +27,7 @@ namespace Cathei.PinInject.Editor
             Selection.activeObject = go;
         }
 
-        [MenuItem("Assets/Create/PinInject/Shared Inject Root", false, 100)]
+        [MenuItem("Assets/Create/PinInject/Persistent Composition Root", false, 100)]
         public static void CreateSharedInjectRoot()
         {
             var assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
@@ -38,10 +38,10 @@ namespace Cathei.PinInject.Editor
             if (!Directory.Exists(assetPath))
                 assetPath = Path.GetDirectoryName(assetPath);
 
-            assetPath = Path.Combine(assetPath, "SharedInjectRoot.prefab");
+            assetPath = Path.Combine(assetPath, "PersistentCompositionRoot.prefab");
             assetPath = AssetDatabase.GenerateUniqueAssetPath(assetPath);
 
-            GameObject go = new GameObject("SharedInjectRoot");
+            GameObject go = new GameObject("PersistentCompositionRoot");
             go.AddComponent<PersistentCompositionRoot>();
 
             var asset = PrefabUtility.SaveAsPrefabAsset(go, assetPath);

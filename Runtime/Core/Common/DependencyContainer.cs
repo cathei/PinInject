@@ -17,9 +17,15 @@ namespace Cathei.PinInject.Internal
         // direct parent to current container
         private IDependencyContainer _parent;
 
-        public DependencyContainer()
+        internal DependencyContainer()
         {
             Reset();
+        }
+
+        internal DependencyContainer(IDependencyContainer parent)
+        {
+            Reset();
+            SetParent(parent);
         }
 
         internal void SetParent(IDependencyContainer parent)
@@ -34,7 +40,7 @@ namespace Cathei.PinInject.Internal
             _instances.Clear();
 
             // container itself is always binded
-            Add<IDependencyContainer>(this);
+            Bind<IDependencyContainer>(this);
         }
 
         public object Resolve(Type type, string id)
@@ -57,17 +63,17 @@ namespace Cathei.PinInject.Internal
             return _parent.Resolve(type, id);
         }
 
-        internal void Add<T>(T instance)
+        internal void Bind<T>(T instance)
         {
-            Add(typeof(T), null, instance);
+            Bind(typeof(T), null, instance);
         }
 
-        internal void Add<T>(string name, T instance)
+        internal void Bind<T>(string name, T instance)
         {
-            Add(typeof(T), name, instance);
+            Bind(typeof(T), name, instance);
         }
 
-        private void Add(Type type, string name, object instance)
+        private void Bind(Type type, string name, object instance)
         {
             _instances.Add((type, name), instance);
         }
