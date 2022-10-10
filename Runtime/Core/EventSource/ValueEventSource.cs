@@ -15,6 +15,7 @@ namespace Cathei.PinInject.UI
         {
             add
             {
+                // provide current value on subscribing
                 value?.Invoke(Value);
                 base.Listeners += value;
             }

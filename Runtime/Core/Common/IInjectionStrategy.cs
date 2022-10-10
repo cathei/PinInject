@@ -6,8 +6,8 @@ using System.Collections.Generic;
 
 namespace Cathei.PinInject.Internal
 {
-    public interface IStrategy
+    public interface IInjectionStrategy<in T>
     {
-        void Inject(object obj, IDependencyContainer container);
+        void Inject(T obj, IDependencyContainer container, Pin.ContextConfiguration config);
     }
 }

@@ -99,7 +99,7 @@ namespace Cathei.PinInject
 
                 args.Apply(instance.transform);
 
-                InjectInternal(instance, GetSceneContainer(instance.scene), config);
+                InjectGameObjectInternal(instance, config);
 
                 instance.SetActive(savedActiveSelf);
 

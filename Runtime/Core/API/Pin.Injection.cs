@@ -7,7 +7,8 @@ namespace Cathei.PinInject
 {
     public static partial class Pin
     {
-        private static readonly IStrategy Strategy = new UnityStrategy();
+        internal static readonly DefaultInjectionStrategy DefaultStrategy = new DefaultInjectionStrategy();
+        internal static readonly IInjectionStrategy<GameObject> UnityStrategy = new UnityInjectionStrategy();
 
         public delegate void ContextConfiguration(DependencyBinder binder);
 
@@ -21,43 +22,39 @@ namespace Cathei.PinInject
                 TObject obj, IDependencyContainer container = null, ContextConfiguration config = null)
             where TObject : class
         {
-            object target = obj;
-
             if (obj is GameObject gameObject)
             {
-                target = gameObject;
-
                 Debug.Assert(container == null,
                     "GameObject must not specify container manually!");
 
-                container = GetSceneContainer(gameObject.scene);
+                InjectGameObjectInternal(gameObject, config);
+                return;
 
             }
-            else if (obj is Component component)
-            {
-                target = component.gameObject;
 
+            if (obj is Component component)
+            {
                 Debug.Assert(container == null,
                     "Component must not specify container manually!");
 
-                container = GetSceneContainer(component.gameObject.scene);
+                InjectGameObjectInternal(component.gameObject, config);
+                return;
             }
 
-            InjectInternal(target, container, config);
+            InjectInternal(obj, container, config);
         }
 
         private static void InjectInternal<TObject>(
                 TObject obj, IDependencyContainer container, ContextConfiguration config)
             where TObject : class
         {
-            if (config != null)
-            {
-                var localContainer = new DependencyContainer(container);
-                config(new DependencyBinder(localContainer));
-                container = localContainer;
-            }
+            DefaultStrategy.Inject(obj, container, config);
+        }
 
-            Strategy.Inject(obj, container);
+        private static void InjectGameObjectInternal(GameObject gameObject, ContextConfiguration config)
+        {
+            var container = GetSceneContainer(gameObject.scene);
+            UnityStrategy.Inject(gameObject, container, config);
         }
     }
 }

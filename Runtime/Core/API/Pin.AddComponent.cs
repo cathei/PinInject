@@ -12,12 +12,20 @@ namespace Cathei.PinInject
 {
     public static partial class Pin
     {
+        /// <summary>
+        /// Add component to GameObject, then inject to the component.
+        /// Note that injection will happen after `Awake` and `OnEnable`.
+        /// </summary>
         public static T AddComponent<T>(GameObject gameObject)
             where T : Component
         {
             return AddComponent(gameObject, typeof(T)) as T;
         }
 
+        /// <summary>
+        /// Add component to GameObject, then inject to the component.
+        /// Note that injection will happen after `Awake` and `OnEnable`.
+        /// </summary>
         public static Component AddComponent(GameObject gameObject, Type componentType)
         {
             var component = gameObject.AddComponent(componentType);
@@ -37,7 +45,7 @@ namespace Cathei.PinInject
             }
 
             // perform regular C# object injection
-            Strategy.Inject(component, container);
+            DefaultStrategy.Inject(component, container, null);
 
             return component;
         }

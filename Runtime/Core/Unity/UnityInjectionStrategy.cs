@@ -7,46 +7,51 @@ using UnityEngine;
 
 namespace Cathei.PinInject.Internal
 {
-    public class UnityStrategy : DefaultStrategy
+    public sealed class UnityInjectionStrategy : IInjectionStrategy<GameObject>
     {
         internal const HideFlags HiddenComponentFlags = HideFlags.HideAndDontSave | HideFlags.HideInInspector;
 
-        public override void Inject(object obj, IDependencyContainer container)
-        {
-            if (obj is GameObject go)
-            {
-                InjectGameObject(go, container);
-                return;
-            }
-
-            base.Inject(obj, container);
-        }
-
-        private void InjectGameObject(GameObject gameObject, IDependencyContainer baseContainer)
+        public void Inject(GameObject gameObject, IDependencyContainer baseContainer, Pin.ContextConfiguration config)
         {
             var cacheComponent = gameObject.CacheInnerReferences();
             baseContainer = gameObject.FindParentContainer() ?? baseContainer;
 
-            foreach (var reference in cacheComponent.InnerReferences)
+            foreach (var node in cacheComponent.InnerReferences)
+            {
+                if (node.container == null)
+                    continue;
+
+                node.container.Container.Reset();
+            }
+
+            if (config != null)
+            {
+                // local context should be created
+                var localContainer = gameObject.GetOrAddContainerComponent().Container;
+
+                localContainer.Reset();
+                localContainer.SetParent(baseContainer);
+
+                var binder = new DependencyBinder(localContainer);
+                config(binder);
+
+                baseContainer = localContainer;
+            }
+
+            foreach (var node in cacheComponent.InnerReferences)
             {
                 IDependencyContainer container;
                 DependencyBinder binder;
 
-                if (reference.container != null)
+                if (node.container != null)
                 {
-                    if (reference.container == reference.component)
-                    {
-                        var parent = baseContainer;
+                    var localContainer = node.container.Container;
 
-                        if (reference.container.parent != null)
-                            parent = reference.container.parent.Container;
+                    localContainer.SetParent(
+                        node.parent != null ? node.parent.Container : baseContainer);
 
-                        reference.container.Container.Reset();
-                        reference.container.Container.SetParent(parent);
-                    }
-
-                    container = reference.container.Container;
-                    binder = new DependencyBinder(reference.container.Container);
+                    container = node.container.Container;
+                    binder = new DependencyBinder(node.container.Container);
                 }
                 else
                 {
@@ -54,7 +59,8 @@ namespace Cathei.PinInject.Internal
                     binder = default;
                 }
 
-                InjectBindResolve(reference.component, container, binder);
+                foreach (var component in node.components)
+                    Pin.DefaultStrategy.InjectBindResolve(component, container, binder);
             }
 
             // when it's injected, references should be invalidated
@@ -72,7 +78,7 @@ namespace Cathei.PinInject.Internal
             if (!gameObject.TryGetComponent(out DependencyContainerComponent component))
             {
                 component = gameObject.AddComponent<DependencyContainerComponent>();
-                component.hideFlags = UnityStrategy.HiddenComponentFlags;
+                component.hideFlags = UnityInjectionStrategy.HiddenComponentFlags;
             }
 
             return component;
@@ -103,13 +109,25 @@ namespace Cathei.PinInject.Internal
             if (!gameObject.TryGetComponent(out HierarchyCacheComponent component))
             {
                 component = gameObject.AddComponent<HierarchyCacheComponent>();
-                component.hideFlags = UnityStrategy.HiddenComponentFlags;
+                component.hideFlags = UnityInjectionStrategy.HiddenComponentFlags;
             }
 
             if (!component.IsValid)
             {
                 component.InnerReferences.Clear();
-                CacheInnerReferencesInternal(component, component.transform, null);
+
+                // create root node
+                var node = new HierarchyCacheComponent.Node
+                {
+                    container = null,
+                    parent = null,
+                    components = new List<MonoBehaviour>()
+                };
+
+                component.InnerReferences.Add(node);
+
+                CacheInnerReferencesInternal(component, component.transform, node);
+
                 component.IsValid = true;
             }
 
@@ -118,22 +136,24 @@ namespace Cathei.PinInject.Internal
 
         // can be called for prefab (Instantiate) or instance (Inject)
         // prefab version is recommended for performance
-        private static void CacheInnerReferencesInternal(HierarchyCacheComponent cache, Transform target, DependencyContainerComponent parentContainer)
+        private static void CacheInnerReferencesInternal(
+            HierarchyCacheComponent cache, Transform target, HierarchyCacheComponent.Node parentNode)
         {
-            DependencyContainerComponent container = parentContainer;
+            HierarchyCacheComponent.Node node = parentNode;
 
-            if (target.TryGetComponent(out IContext _) || target.TryGetComponent(out ICompositionRoot _))
+            if (target.TryGetComponent(out IInjectionContext _) || target.TryGetComponent(out ICompositionRoot _))
             {
-                // child container will be used for this game object
-                container = target.gameObject.GetOrAddContainerComponent();
-                container.parent = parentContainer;
+                // local context exists for this game object
+                var localContainer = target.gameObject.GetOrAddContainerComponent();
 
-                // container referencing itself
-                cache.InnerReferences.Add(new HierarchyCacheComponent.InnerPrefabReferences
+                node = new HierarchyCacheComponent.Node
                 {
-                    container = container,
-                    component = container
-                });
+                    container = localContainer,
+                    parent = parentNode.container,
+                    components = new List<MonoBehaviour>()
+                };
+
+                cache.InnerReferences.Add(node);
             }
 
             target.GetComponents(ComponentBuffer);
@@ -141,38 +161,26 @@ namespace Cathei.PinInject.Internal
             // contexts should be injected first
             foreach (var component in ComponentBuffer)
             {
-                if (component is IContext)
-                {
-                    cache.InnerReferences.Add(new HierarchyCacheComponent.InnerPrefabReferences
-                    {
-                        container = container,
-                        component = component
-                    });
-                }
+                if (component is IInjectionContext)
+                    node.components.Add(component);
             }
 
             foreach (var component in ComponentBuffer)
             {
                 // it is already included
-                if (component is IContext)
+                if (component is IInjectionContext)
                     continue;
 
                 var reflection = ReflectionCache.Get(component.GetType());
 
                 if (reflection.HasAnyAttribute)
-                {
-                    cache.InnerReferences.Add(new HierarchyCacheComponent.InnerPrefabReferences
-                    {
-                        container = container,
-                        component = component
-                    });
-                }
+                    node.components.Add(component);
             }
 
             for (int i = 0; i < target.childCount; ++i)
             {
                 Transform child = target.GetChild(i);
-                CacheInnerReferencesInternal(cache, child, container);
+                CacheInnerReferencesInternal(cache, child, node);
             }
         }
 

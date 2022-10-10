@@ -4,7 +4,7 @@
   "author": {
     "name": "Maxwell Keonwoo Kang"
   },
-  "version": "0.0.5",
+  "version": "0.0.6",
   "unity": "2020.1",
   "description": "Minimalistic Dependency Injection tool for Unity",
   "license": "MIT",

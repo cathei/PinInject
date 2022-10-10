@@ -13,19 +13,20 @@ namespace Cathei.PinInject.Internal
     public class HierarchyCacheComponent : MonoBehaviour
     {
         [Serializable]
-        public struct InnerPrefabReferences
+        public struct Node
         {
             public DependencyContainerComponent container;
-            public MonoBehaviour component;
+            public DependencyContainerComponent parent;
+            public List<MonoBehaviour> components;
         }
 
         [SerializeField]
-        private List<InnerPrefabReferences> innerReferences = new List<InnerPrefabReferences>();
+        private List<Node> innerReferences = new List<Node>();
 
         [SerializeField]
         private int resetCount = -1;
 
-        public List<InnerPrefabReferences> InnerReferences => innerReferences;
+        public List<Node> InnerReferences => innerReferences;
 
         public bool IsValid
         {

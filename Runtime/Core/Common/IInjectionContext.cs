@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Cathei.PinInject
 {
-    public interface IContext
+    public interface IInjectionContext
     {
         void Configure(DependencyBinder binder);
     }

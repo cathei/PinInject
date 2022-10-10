@@ -17,7 +17,7 @@ namespace Cathei.PinInject.Editor
     [CustomPropertyDrawer(typeof(InjectNameSelectionAttribute))]
     public class InjectNameSelectionPropertyDrawer : PropertyDrawer
     {
-        private List<IContext> _tempContexts = new List<IContext>();
+        private List<IInjectionContext> _tempContexts = new List<IInjectionContext>();
         private List<DisplayContent> _tempContents = new List<DisplayContent>();
 
         private struct DisplayContent

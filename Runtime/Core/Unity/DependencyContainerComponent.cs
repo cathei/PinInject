@@ -14,7 +14,5 @@ namespace Cathei.PinInject.Internal
     public class DependencyContainerComponent : MonoBehaviour
     {
         internal readonly DependencyContainer Container = new DependencyContainer();
-
-        [SerializeField] internal DependencyContainerComponent parent;
     }
 }

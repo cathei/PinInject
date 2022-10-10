@@ -6,14 +6,21 @@ using System.Collections.Generic;
 
 namespace Cathei.PinInject.Internal
 {
-    public class DefaultStrategy : IStrategy
+    public sealed class DefaultInjectionStrategy : IInjectionStrategy<object>
     {
         private static readonly HashSet<object> _recursiveCheck = new HashSet<object>();
 
-        public virtual void Inject(object obj, IDependencyContainer container)
+        public void Inject(object obj, IDependencyContainer container, Pin.ContextConfiguration config)
         {
             // entry point of injection
             _recursiveCheck.Clear();
+
+            if (config != null)
+            {
+                var localContainer = new DependencyContainer(container);
+                config(new DependencyBinder(localContainer));
+                container = localContainer;
+            }
 
             InjectInternal(obj, container);
         }
@@ -29,7 +36,7 @@ namespace Cathei.PinInject.Internal
             DependencyBinder binder = default;
 
             // another depth of injection
-            if (obj is IContext)
+            if (obj is IInjectionContext)
             {
                 var childContainer = new DependencyContainer();
                 childContainer.SetParent(baseContainer);
@@ -47,7 +54,7 @@ namespace Cathei.PinInject.Internal
 
             InjectProperties(reflection, obj, container);
 
-            if (obj is IContext context)
+            if (obj is IInjectionContext context)
                 context.Configure(binder);
 
             ResolveProperties(reflection, obj, container);
@@ -84,7 +91,7 @@ namespace Cathei.PinInject.Internal
                 if (child == null)
                     continue;
 
-                // even for game object, nested properties should use default inject strategy
+                // even for Unity components, nested properties should use default inject strategy
                 // also resolving other game object with [Resolve] is not allowed
                 InjectInternal(child, container);
             }
