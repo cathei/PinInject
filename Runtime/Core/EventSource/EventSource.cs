@@ -18,7 +18,7 @@ namespace Cathei.PinInject.UI
 
     public static class EventSourceExtensions
     {
-        public static void AddEventSource<T>(this DependencyBinder binder, string name, EventSource<T> source)
+        public static void BindEventSource<T>(this DependencyBinder binder, string name, EventSource<T> source)
         {
             binder.Bind<IEventSource<T>>(name, source);
             binder.Bind<IEventPublisher<T>>(name, source);

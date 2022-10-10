@@ -195,7 +195,20 @@ public class InjectedParent : IInjectionContext
 Executed `Pin.Inject(new InjectedParent());` to show the value.
 
 > **Note**  
-> You can inject `IInjectContainer` type to use with `Pin.Inject`, to pass same context to children. For `GameObject`, you don't have to provide `IInjectContainer` because it will be inferred from hierarchy.
+> You can inject `IDependencyContainer` type to use with `Pin.Inject`, to pass same context to children. For `GameObject`, you should not provide `IDependencyContainer` because it will be inferred from hierarchy.  
+
+## Additional Bindings
+You can specify additional binding configuration with `config` parameter. The parameter exists for `Inject`, `Instantiate`, `AddComponent` and `Spawn`.
+
+This is useful when you have to bind information between contexts while they are not sharing parent.
+
+```csharp
+Pin.Instantiate(playerHpBar, hpBarPanel, binder =>
+{
+    binder.Bind(playerInfo);
+    binder.BindEventSource(HpBarContext.HpSliderName, hpSliderValue);
+});
+```
 
 ## About Caches
 PinInject attaches small component to your prefab to cache components, so it will automatically converted into instance reference when you instantiate. 
