@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using Cathei.PinInject;
 using UnityEngine;
 
-public class Test2SceneContext : MonoBehaviour, IContext
+public class Test2SceneContext : MonoBehaviour, IInjectionContext
 {
-    public void Configure(DependencyRegistry registry)
+    public void Configure(DependencyBinder binder)
     {
-        registry.Add<IBindWithInterface>(new BindWithInterface(1024));
-        registry.Add(new BindWithNew("TestScene2"));
+        binder.Bind<IBindWithInterface>(new BindWithInterface(1024));
+        binder.Bind(new BindWithNew("TestScene2"));
     }
 }

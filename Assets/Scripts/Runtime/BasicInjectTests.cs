@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 
 [TestFixture]
-public class BasicInjectTests : IContext
+public class BasicInjectTests : IInjectionContext
 {
     [Inject]
     private IDependencyContainer _container;
@@ -20,10 +20,10 @@ public class BasicInjectTests : IContext
         Pin.Inject(this);
     }
 
-    public void Configure(DependencyRegistry registry)
+    public void Configure(DependencyBinder binder)
     {
-        registry.Add<IBindWithInterface>(new BindWithInterface(1));
-        registry.Add(new BindWithNew());
+        binder.Bind<IBindWithInterface>(new BindWithInterface(1));
+        binder.Bind(new BindWithNew());
     }
 
     [Test]

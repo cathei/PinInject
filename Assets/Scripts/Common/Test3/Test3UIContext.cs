@@ -7,7 +7,7 @@ using Cathei.PinInject;
 using Cathei.PinInject.UI;
 using UnityEngine;
 
-public class Test3UIContext : MonoBehaviour, IContext, IPostInjectHandler
+public class Test3UIContext : MonoBehaviour, IInjectionContext, IPostInjectHandler
 {
     private EventSource<string> textEvent;
     private EventSource<object> buttonEvent;
@@ -17,13 +17,13 @@ public class Test3UIContext : MonoBehaviour, IContext, IPostInjectHandler
     public const string UI3Text = "UI3Text";
     public const string UI3Button = "UI3Button";
 
-    public void Configure(DependencyRegistry registry)
+    public void Configure(DependencyBinder binder)
     {
         textEvent = new EventSource<string>();
         buttonEvent = new EventSource<object>();
 
-        registry.AddEventSource("UI3Text", textEvent);
-        registry.AddEventSource("UI3Button", buttonEvent);
+        binder.AddEventSource("UI3Text", textEvent);
+        binder.AddEventSource("UI3Button", buttonEvent);
     }
 
     public void PostInject()

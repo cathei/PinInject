@@ -22,7 +22,7 @@ public class CircularInjectTests
         public CircularChildA childA;
     }
 
-    public class CircularParent : IContext
+    public class CircularParent : IInjectionContext
     {
         [Resolve]
         public CircularChildA childA;
@@ -30,17 +30,17 @@ public class CircularInjectTests
         [Resolve]
         public CircularChildB childB;
 
-        public void Configure(DependencyRegistry registry)
+        public void Configure(DependencyBinder binder)
         {
             childA = new CircularChildA();
             childB = new CircularChildB();
 
-            registry.Add(childA);
-            registry.Add(childB);
+            binder.Bind(childA);
+            binder.Bind(childB);
         }
     }
 
-    public class RecursiveInjectChild : IContext
+    public class RecursiveInjectChild : IInjectionContext
     {
         [Resolve]
         public RecursiveInjectChild item;
@@ -48,22 +48,22 @@ public class CircularInjectTests
         [Inject]
         public int value;
 
-        public void Configure(DependencyRegistry registry)
+        public void Configure(DependencyBinder binder)
         {
-            registry.Add(value + 1);
+            binder.Bind(value + 1);
         }
     }
 
-    public class RecursiveInjectParent : IContext
+    public class RecursiveInjectParent : IInjectionContext
     {
         [Resolve]
         public RecursiveInjectChild item;
 
         public int value;
 
-        public void Configure(DependencyRegistry registry)
+        public void Configure(DependencyBinder binder)
         {
-            registry.Add(value);
+            binder.Bind(value);
         }
     }
 

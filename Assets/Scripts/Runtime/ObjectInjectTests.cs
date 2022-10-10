@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 
 [TestFixture]
-public class ObjectInjectTests : IContext
+public class ObjectInjectTests : IInjectionContext
 {
     public class InjectableChild
     {
@@ -19,7 +19,7 @@ public class ObjectInjectTests : IContext
         public string bindedStr;
     }
 
-    public class InjectableParent : IContext
+    public class InjectableParent : IInjectionContext
     {
         [Inject]
         public IBindWithInterface bindedInterf;
@@ -38,9 +38,9 @@ public class ObjectInjectTests : IContext
             Nested = nested;
         }
 
-        public void Configure(DependencyRegistry registry)
+        public void Configure(DependencyBinder binder)
         {
-            registry.Add(_value);
+            binder.Bind(_value);
         }
     }
 
@@ -54,10 +54,10 @@ public class ObjectInjectTests : IContext
         Pin.Inject(this);
     }
 
-    public void Configure(DependencyRegistry registry)
+    public void Configure(DependencyBinder binder)
     {
-        registry.Add<IBindWithInterface>(new BindWithInterface(8));
-        registry.Add(new BindWithNew());
+        binder.Bind<IBindWithInterface>(new BindWithInterface(8));
+        binder.Bind(new BindWithNew());
     }
 
     [Test]

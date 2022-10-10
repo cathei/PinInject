@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using Cathei.PinInject;
 using UnityEngine;
 
-public class Test3SceneContext : MonoBehaviour, IContext
+public class Test3SceneContext : MonoBehaviour, IInjectionContext
 {
     public const string TestString = "TestString";
 
-    public void Configure(DependencyRegistry registry)
+    public void Configure(DependencyBinder binder)
     {
 
     }

@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 
 [TestFixture]
-public class CollectionInjectTests : IContext
+public class CollectionInjectTests : IInjectionContext
 {
     public class InjectableChild
     {
@@ -26,7 +26,7 @@ public class CollectionInjectTests : IContext
         }
     }
 
-    public class InjectableParent : IContext
+    public class InjectableParent : IInjectionContext
     {
         [Resolve]
         public AutoInjectCollection<InjectableChild> list;
@@ -39,13 +39,13 @@ public class CollectionInjectTests : IContext
             _value = value;
         }
 
-        public void Configure(DependencyRegistry registry)
+        public void Configure(DependencyBinder binder)
         {
-            registry.Add(_value);
+            binder.Bind(_value);
         }
     }
 
-    public class InjectableKeyedParent : AutoInjectKeyedCollection<int, InjectableChild>, IContext
+    public class InjectableKeyedParent : AutoInjectKeyedCollection<int, InjectableChild>, IInjectionContext
     {
         private string _value;
 
@@ -54,9 +54,9 @@ public class CollectionInjectTests : IContext
             _value = value;
         }
 
-        public void Configure(DependencyRegistry registry)
+        public void Configure(DependencyBinder binder)
         {
-            registry.Add(_value);
+            binder.Bind(_value);
         }
 
         protected override int GetKeyForItem(InjectableChild item)
@@ -75,10 +75,10 @@ public class CollectionInjectTests : IContext
         Pin.Inject(this);
     }
 
-    public void Configure(DependencyRegistry registry)
+    public void Configure(DependencyBinder binder)
     {
-        registry.Add<IBindWithInterface>(new BindWithInterface(8));
-        registry.Add(new BindWithNew());
+        binder.Bind<IBindWithInterface>(new BindWithInterface(8));
+        binder.Bind(new BindWithNew());
     }
 
     [Test]

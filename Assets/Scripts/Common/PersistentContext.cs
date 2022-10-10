@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using Cathei.PinInject;
 using UnityEngine;
 
-public class PersistentContext : IContext
+public class PersistentContext : IInjectionContext
 {
-    public void Configure(DependencyRegistry registry)
+    public void Configure(DependencyBinder binder)
     {
         Debug.Log("Configuring Shared Context");
     }

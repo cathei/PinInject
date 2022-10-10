@@ -5,12 +5,12 @@ using System.Collections.Generic;
 using Cathei.PinInject;
 using UnityEngine;
 
-public class Test1GameObjectContext : MonoBehaviour, IContext
+public class Test1GameObjectContext : MonoBehaviour, IInjectionContext
 {
     public int value;
 
-    public void Configure(DependencyRegistry registry)
+    public void Configure(DependencyBinder binder)
     {
-        registry.Add<IBindWithInterface>(new BindWithInterface(value));
+        binder.Bind<IBindWithInterface>(new BindWithInterface(value));
     }
 }

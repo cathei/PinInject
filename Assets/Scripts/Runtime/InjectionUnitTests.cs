@@ -12,8 +12,6 @@ using UnityEngine.TestTools;
 [TestFixture]
 public class InjectionUnitTests
 {
-    private UnityStrategy _strategy = new UnityStrategy();
-
     [SetUp]
     public void Setup()
     {
@@ -31,7 +29,9 @@ public class InjectionUnitTests
         var cache = go.GetComponent<HierarchyCacheComponent>();
 
         Assert.NotNull(cache);
-        Assert.AreEqual(1, cache.InnerReferences.Count);
+
+        // one for parent and one for composition root
+        Assert.AreEqual(2, cache.InnerReferences.Count);
 
         var container = go.GetComponent<DependencyContainerComponent>();
 
