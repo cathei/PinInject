@@ -8,6 +8,8 @@ namespace Cathei.PinInject
     {
         private readonly DependencyContainer _container;
 
+        public IDependencyContainer Container => _container;
+
         public DependencyBinder(DependencyContainer container)
         {
             _container = container;
