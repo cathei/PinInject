@@ -29,16 +29,7 @@ namespace Cathei.PinInject
             if (component == null)
                 return null;
 
-            IDependencyContainer container;
-
-            if (gameObject.TryGetComponent(out DependencyContainerComponent containerComponent))
-            {
-                container = containerComponent.Container;
-            }
-            else
-            {
-                container = gameObject.FindParentContainer();
-            }
+            var container = gameObject.FindParentContainer(true);
 
             // perform regular C# object injection
             DefaultStrategy.Inject(component, container, null);

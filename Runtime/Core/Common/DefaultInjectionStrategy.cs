@@ -6,12 +6,12 @@ namespace Cathei.PinInject.Internal
 {
     public sealed class DefaultInjectionStrategy : IInjectionStrategy<object>
     {
-        private static readonly HashSet<object> _recursiveCheck = new HashSet<object>();
+        private static readonly HashSet<object> RecursiveCheck = new HashSet<object>();
 
         public void Inject(object obj, IDependencyContainer container, Pin.ContextConfiguration config)
         {
             // entry point of injection
-            _recursiveCheck.Clear();
+            RecursiveCheck.Clear();
 
             if (config != null)
             {
@@ -25,10 +25,10 @@ namespace Cathei.PinInject.Internal
 
         private void InjectInternal(object obj, IDependencyContainer baseContainer)
         {
-            if (_recursiveCheck.Contains(obj))
+            if (RecursiveCheck.Contains(obj))
                 throw new InjectionException($"Circular dependency injection on {obj.GetType()} {obj}");
 
-            _recursiveCheck.Add(obj);
+            RecursiveCheck.Add(obj);
 
             IDependencyContainer container = baseContainer;
             DependencyBinder binder = default;

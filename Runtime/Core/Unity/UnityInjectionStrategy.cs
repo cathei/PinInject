@@ -12,7 +12,6 @@ namespace Cathei.PinInject.Internal
         public void Inject(GameObject gameObject, IDependencyContainer baseContainer, Pin.ContextConfiguration config)
         {
             var cacheComponent = gameObject.CacheInnerReferences();
-            baseContainer = gameObject.FindParentContainer() ?? baseContainer;
 
             foreach (var node in cacheComponent.InnerReferences)
             {
@@ -82,11 +81,16 @@ namespace Cathei.PinInject.Internal
             return component;
         }
 
-        internal static DependencyContainer FindParentContainer(this GameObject gameObject)
+        /// <summary>
+        /// Find container from parent's DependencyContainerComponent.
+        /// If there is no parent container, scene container will be used.
+        /// includeSelf flag exists to include current GameObject for AddComponent.
+        /// </summary>
+        internal static DependencyContainer FindParentContainer(this GameObject gameObject, bool includeSelf = false)
         {
             DependencyContainer parentContainer = null;
 
-            Transform parent = gameObject.transform.parent;
+            Transform parent = includeSelf ? gameObject.transform : gameObject.transform.parent;
 
             while (parent != null)
             {
@@ -99,7 +103,7 @@ namespace Cathei.PinInject.Internal
                 parent = parent.parent;
             }
 
-            return parentContainer;
+            return parentContainer ?? Pin.GetSceneContainer(gameObject.scene);
         }
 
         public static HierarchyCacheComponent CacheInnerReferences(this GameObject gameObject)

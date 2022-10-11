@@ -4,7 +4,10 @@ using System;
 
 namespace Cathei.PinInject.UI
 {
-    public class ValueEventSource<T> : EventSource<T>
+    /// <summary>
+    /// EventSource with state in value. Acts similar to ReactiveProperty.
+    /// </summary>
+    public class ValueSource<T> : EventSource<T>
     {
         public T Value { get; private set; }
 

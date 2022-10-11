@@ -4,6 +4,9 @@ using System;
 
 namespace Cathei.PinInject.UI
 {
+    /// <summary>
+    /// IObserver wrapper for IEventPublisher
+    /// </summary>
     public class EventPublisherObserver<T> : IObserver<T>
     {
         private readonly IEventPublisher<T> _publisher;

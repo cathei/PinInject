@@ -35,7 +35,6 @@ namespace Cathei.PinInject
 
                 InjectGameObjectInternal(gameObject, config);
                 return;
-
             }
 
             if (obj is Component component)
@@ -59,7 +58,7 @@ namespace Cathei.PinInject
 
         private static void InjectGameObjectInternal(GameObject gameObject, ContextConfiguration config)
         {
-            var container = GetSceneContainer(gameObject.scene);
+            var container = gameObject.FindParentContainer();
             UnityStrategy.Inject(gameObject, container, config);
         }
     }
