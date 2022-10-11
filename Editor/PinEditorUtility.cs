@@ -13,7 +13,7 @@ namespace Cathei.PinInject.Editor
     public static class PinEditorUtility
     {
         [MenuItem("GameObject/PinInject/Scene Composition Root", false, 10)]
-        public static void CreateSceneInjectRoot(MenuCommand menuCommand)
+        public static void CreateSceneCompositionRoot(MenuCommand menuCommand)
         {
             // Create a custom game object
             GameObject go = new GameObject("SceneCompositionRoot");
@@ -28,7 +28,7 @@ namespace Cathei.PinInject.Editor
         }
 
         [MenuItem("Assets/Create/PinInject/Persistent Composition Root", false, 100)]
-        public static void CreateSharedInjectRoot()
+        public static void CreatePersistentCompositionRoot()
         {
             var assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
 

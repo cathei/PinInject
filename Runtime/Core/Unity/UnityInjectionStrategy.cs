@@ -143,7 +143,24 @@ namespace Cathei.PinInject.Internal
         {
             HierarchyCacheComponent.Node node = parentNode;
 
-            if (target.TryGetComponent(out IInjectionContext _) || target.TryGetComponent(out ICompositionRoot _))
+            bool createLocalContainer = false;
+
+            if (target.TryGetComponent(out ICompositionRoot _))
+            {
+                if (cache.transform != target)
+                {
+                    // composition root detected as child transform
+                    // injection should not happen for this object
+                    return;
+                }
+
+                createLocalContainer = true;
+            }
+
+            if (target.TryGetComponent(out IInjectionContext _))
+                createLocalContainer = true;
+
+            if (createLocalContainer)
             {
                 // local context exists for this game object
                 var localContainer = target.gameObject.GetOrAddContainerComponent();
@@ -160,9 +177,9 @@ namespace Cathei.PinInject.Internal
 
             target.GetComponents(ComponentBuffer);
 
-            // contexts should be injected first
             foreach (var component in ComponentBuffer)
             {
+                // contexts should be injected first
                 if (component is IInjectionContext)
                     node.components.Add(component);
             }

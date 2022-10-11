@@ -74,10 +74,10 @@ namespace Cathei.PinInject
             if (_sceneContainers.ContainsKey(scene.handle))
                 throw new InjectionException("Scene should only contain one SceneInjectRoot");
 
-            var sharedContainer = SetUpPersistent(compositionRoot.parent);
+            var persistentContainer = SetUpPersistent(compositionRoot.parent);
 
             // inject scene first
-            UnityStrategy.Inject(compositionRootObject, sharedContainer, null);
+            UnityStrategy.Inject(compositionRootObject, persistentContainer, null);
 
             var sceneContainer = compositionRootObject.GetOrAddContainerComponent();
 
@@ -91,6 +91,8 @@ namespace Cathei.PinInject
             {
                 var rootObject = _tempRootObjects[i];
 
+                // inject except scene composition root
+                // childed case will be filtered in Inject
                 if (rootObject == compositionRootObject)
                     continue;
 

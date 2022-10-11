@@ -26,8 +26,8 @@ Last but not least, you can use DI to avoid Singleton pattern. Don't get me wron
 
 ## Why PinInject?
 * Minimal API & complexity
-* No unnecessary overconfiguration
-* Anti-patterns are not allowed
+* No unnecessarily verbose configuration
+* Anti-patterns are prevented
 * Static API gives you flexibility
 * Utilities like Auto-Inject Collection and Object Pool
 * Supports easy UI Binding with minimal Editor work

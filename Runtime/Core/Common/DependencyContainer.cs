@@ -39,7 +39,7 @@ namespace Cathei.PinInject.Internal
             _instances.Clear();
 
             // container itself is always bound
-            Bind<IDependencyContainer>(this);
+            Bind(typeof(IDependencyContainer), null, this);
         }
 
         /// <summary>
@@ -59,17 +59,7 @@ namespace Cathei.PinInject.Internal
             return _parent.Resolve(type, name);
         }
 
-        internal void Bind<T>(T instance)
-        {
-            Bind(typeof(T), null, instance);
-        }
-
-        internal void Bind<T>(string name, T instance)
-        {
-            Bind(typeof(T), name, instance);
-        }
-
-        private void Bind(Type type, string name, object instance)
+        internal void Bind(Type type, string name, object instance)
         {
             var key = (type, name);
 
