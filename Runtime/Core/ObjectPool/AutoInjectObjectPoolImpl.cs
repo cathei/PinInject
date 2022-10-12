@@ -11,7 +11,7 @@ namespace Cathei.PinInject.Internal
     {
         private readonly Transform _root;
         private readonly GameObject _prefab;
-        private readonly IObjectPool<GameObject> _pool;
+        private readonly IGenericObjectPool<GameObject> _pool;
         private readonly Pin.Instantiator _instantiator;
 
         internal AutoInjectObjectPoolImpl(

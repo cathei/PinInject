@@ -9,7 +9,7 @@ namespace Cathei.PinInject.Internal
     /// <summary>
     /// A generic object pool for C# object.
     /// </summary>
-    internal class GenericObjectPoolImpl<T> : IObjectPool<T>, IDisposable
+    internal class GenericObjectPoolImpl<T> : IGenericObjectPool<T>, IDisposable
         where T : class
     {
         private Stack<T> _pool = new Stack<T>();
