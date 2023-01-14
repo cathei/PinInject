@@ -14,21 +14,21 @@ namespace Cathei.PinInject
         public static IObjectPool<T> Create<T>(int minInstance = 0, int maxInstance = 100)
             where T : class, new()
         {
-            return Create(() => new T(), Ignore, Ignore, minInstance, maxInstance);
+            return Create(() => new T(), null, null, minInstance, maxInstance);
         }
 
         public static IObjectPool<T> Create<T>(
                 Func<T> createInstance, int minInstance = 0, int maxInstance = 100)
             where T : class
         {
-            return Create(createInstance, Ignore, Ignore, minInstance, maxInstance);
+            return Create(createInstance, null, null, minInstance, maxInstance);
         }
 
         public static IObjectPool<T> Create<T>(
                 Action<T> resetInstance, int minInstance = 0, int maxInstance = 100)
             where T : class, new()
         {
-            return Create(() => new T(), resetInstance, Ignore, minInstance, maxInstance);
+            return Create(() => new T(), resetInstance, null, minInstance, maxInstance);
         }
 
         public static IObjectPool<T> Create<T>(
@@ -36,8 +36,17 @@ namespace Cathei.PinInject
                 int minInstance = 0, int maxInstance = 100)
             where T : class
         {
-            return new GenericObjectPoolImpl<T>(
-                minInstance, maxInstance, createInstance, resetInstance ?? Ignore, disposeInstance ?? Ignore);
+            var objectPool = new ObjectPool<T>(createInstance, null, resetInstance, disposeInstance,
+                defaultCapacity: minInstance, maxSize: maxInstance);
+
+            if (minInstance > 0)
+            {
+                // fill object pool, Unity only allocate for list capacity
+                for (int i = 0; i < minInstance; ++i)
+                    objectPool.Release(createInstance());
+            }
+
+            return objectPool;
         }
     }
 }

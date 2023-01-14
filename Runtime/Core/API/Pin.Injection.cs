@@ -7,7 +7,7 @@ namespace Cathei.PinInject
 {
     public static partial class Pin
     {
-        internal static readonly DefaultInjectionStrategy DefaultStrategy = new DefaultInjectionStrategy();
+        internal static readonly DefaultInjectionStrategy DefaultStrategy = new();
         internal static readonly IInjectionStrategy<GameObject> UnityStrategy = new UnityInjectionStrategy();
 
         public delegate void ContextConfiguration(DependencyBinder binder);

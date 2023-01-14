@@ -15,7 +15,7 @@ namespace Cathei.PinInject
             var root = new GameObject($"InjectObjectPool {prefab.name}");
 
             if (isPersistent)
-                UnityEngine.Object.DontDestroyOnLoad(root);
+                Object.DontDestroyOnLoad(root);
 
             root.SetActive(false);
             return root.transform;

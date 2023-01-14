@@ -9,11 +9,10 @@ namespace Cathei.PinInject
 {
     public static partial class Pin
     {
-        private static readonly Dictionary<int, DependencyContainer> _persistentContainers = new Dictionary<int, DependencyContainer>();
-        private static readonly Dictionary<int, DependencyContainer> _sceneContainers = new Dictionary<int, DependencyContainer>();
+        private static readonly Dictionary<int, DependencyContainer> _persistentContainers = new();
+        private static readonly Dictionary<int, DependencyContainer> _sceneContainers = new();
 
-        private static readonly List<GameObject> _tempRootObjects = new List<GameObject>();
-        private static readonly List<IInjectionContext> _tempContexts = new List<IInjectionContext>();
+        private static readonly List<GameObject> _tempRootObjects = new();
 
         internal static int _resetCount = 0;
 
@@ -44,9 +43,9 @@ namespace Cathei.PinInject
             {
                 prefab.SetActive(false);
 
-                var instance = UnityEngine.Object.Instantiate(prefab, null);
+                var instance = Object.Instantiate(prefab, null);
 
-                UnityEngine.Object.DontDestroyOnLoad(instance);
+                Object.DontDestroyOnLoad(instance);
 
                 // inject root first
                 UnityStrategy.Inject(instance, null, null);

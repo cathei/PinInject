@@ -6,7 +6,7 @@ namespace Cathei.PinInject.Internal
 {
     public sealed class DefaultInjectionStrategy : IInjectionStrategy<object>
     {
-        private static readonly HashSet<object> RecursiveCheck = new HashSet<object>();
+        private static readonly HashSet<object> RecursiveCheck = new();
 
         public void Inject(object obj, IDependencyContainer container, Pin.ContextConfiguration config)
         {

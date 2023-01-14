@@ -8,7 +8,7 @@ namespace Cathei.PinInject.Internal
 {
     public class ReflectionCache
     {
-        private static readonly Dictionary<Type, ReflectionCache> CachePerType = new Dictionary<Type, ReflectionCache>();
+        private static readonly Dictionary<Type, ReflectionCache> CachePerType = new();
 
         public static ReflectionCache Get(Type type)
         {

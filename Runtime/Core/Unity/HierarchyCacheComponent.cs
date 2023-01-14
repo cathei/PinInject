@@ -20,7 +20,7 @@ namespace Cathei.PinInject.Internal
         }
 
         [SerializeField]
-        private List<Node> innerReferences = new List<Node>();
+        private List<Node> innerReferences = new();
 
         [SerializeField]
         private int resetCount = -1;

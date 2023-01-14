@@ -11,7 +11,7 @@ namespace Cathei.PinInject.Internal
         // public Dictionary<Type, Func<object>> _builders = new Dictionary<Type, Func<object>>();
 
         // type -> instance
-        private readonly Dictionary<(Type, string), object> _instances = new Dictionary<(Type, string), object>();
+        private readonly Dictionary<(Type, string), object> _instances = new();
 
         // direct parent to current container
         private IDependencyContainer _parent;

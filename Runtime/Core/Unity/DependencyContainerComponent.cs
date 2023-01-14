@@ -10,6 +10,6 @@ namespace Cathei.PinInject.Internal
     /// </summary>
     public class DependencyContainerComponent : MonoBehaviour
     {
-        internal readonly DependencyContainer Container = new DependencyContainer();
+        internal readonly DependencyContainer Container = new();
     }
 }

@@ -68,7 +68,7 @@ namespace Cathei.PinInject.Internal
     internal static class UnityStrategyExtensions
     {
         // unity itself is single-threaded so we can just use single temp variable
-        private static readonly List<MonoBehaviour> ComponentBuffer = new List<MonoBehaviour>();
+        private static readonly List<MonoBehaviour> ComponentBuffer = new();
 
         internal static DependencyContainerComponent GetOrAddContainerComponent(this GameObject gameObject)
         {
