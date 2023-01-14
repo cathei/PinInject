@@ -1,6 +1,7 @@
 // PinInject, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace Cathei.PinInject.Internal
 {
@@ -11,7 +12,7 @@ namespace Cathei.PinInject.Internal
     {
         private readonly Transform _root;
         private readonly GameObject _prefab;
-        private readonly IGenericObjectPool<GameObject> _pool;
+        private readonly IObjectPool<GameObject> _pool;
         private readonly Pin.Instantiator _instantiator;
 
         internal AutoInjectObjectPoolImpl(

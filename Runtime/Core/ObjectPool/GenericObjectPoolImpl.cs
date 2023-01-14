@@ -3,13 +3,14 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace Cathei.PinInject.Internal
 {
     /// <summary>
     /// A generic object pool for C# object.
     /// </summary>
-    internal class GenericObjectPoolImpl<T> : IGenericObjectPool<T>, IDisposable
+    internal class GenericObjectPoolImpl<T> : IObjectPool<T>, IDisposable
         where T : class
     {
         private Stack<T> _pool = new Stack<T>();

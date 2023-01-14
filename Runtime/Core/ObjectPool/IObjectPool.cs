@@ -1,6 +1,8 @@
-namespace Cathei.PinInject
+#if !UNITY_2021_1_OR_NEWER
+
+namespace UnityEngine.Pool
 {
-    public interface IGenericObjectPool<T>
+    public interface IObjectPool<T>
     {
         int CountInactive { get; }
 
@@ -9,5 +11,7 @@ namespace Cathei.PinInject
         void Clear();
     }
 }
+
+#endif
 
 
