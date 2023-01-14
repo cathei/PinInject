@@ -75,7 +75,7 @@ public class ObjectPoolTests
     [Test]
     public void ObjectPoolTests_MaxSize()
     {
-        var pool = GenericObjectPool.Create(() => "abcd", 0, 40);
+        var pool = GenericObjectPool.Create(() => new string("abcd"), 0, 40);
 
         List<string> temp = new List<string>();
 
