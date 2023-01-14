@@ -49,6 +49,12 @@ namespace Cathei.PinInject.Internal
             return instance;
         }
 
+        public PooledObject<T> Get(out T value)
+        {
+            value = Get();
+            return new PooledObject<T>(value, this);
+        }
+
         public void Release(T instance)
         {
             if (_pool.Count < _maxInstance)
