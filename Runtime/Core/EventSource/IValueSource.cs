@@ -4,10 +4,8 @@ using System;
 
 namespace Cathei.PinInject.UI
 {
-    public interface IEventSource<out T>
+    public interface IValueSource<out T> : IEventSource<T>
     {
-        event Action<T> OnNext;
-
-        IDisposable Subscribe(Action<T> action);
+        T Value { get; }
     }
 }

@@ -6,18 +6,13 @@ namespace Cathei.PinInject.UI
 {
     public class EventSource<T> : IEventPublisher<T>, IEventSource<T>
     {
-        public virtual event Action<T> Listeners;
+        public virtual event Action<T> OnNext;
 
         public EventSource() { }
 
         public virtual void Publish(T value)
         {
-            Listeners?.Invoke(value);
-        }
-
-        public IDisposable Subscribe(IObserver<T> observer)
-        {
-            return new EventSourceSubscription<T>(this, observer.OnNext);
+            OnNext?.Invoke(value);
         }
 
         public IDisposable Subscribe(Action<T> action)

@@ -23,12 +23,12 @@ namespace Cathei.PinInject.UI
 
         protected virtual void OnEnable()
         {
-            _eventSource.Listeners += HandleEvent;
+            _eventSource.OnNext += HandleEvent;
         }
 
         protected virtual void OnDisable()
         {
-            _eventSource.Listeners -= HandleEvent;
+            _eventSource.OnNext -= HandleEvent;
         }
 
         protected abstract void HandleEvent(TParam param);

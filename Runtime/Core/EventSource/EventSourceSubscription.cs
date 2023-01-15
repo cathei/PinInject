@@ -14,12 +14,12 @@ namespace Cathei.PinInject.UI
             _source = source;
             _action = action;
 
-            _source.Listeners += _action;
+            _source.OnNext += _action;
         }
 
         public void Dispose()
         {
-            _source.Listeners -= _action;
+            _source.OnNext -= _action;
         }
     }
 }
