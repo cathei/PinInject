@@ -14,6 +14,16 @@ namespace Cathei.PinInject.UI
         {
             Listeners?.Invoke(value);
         }
+
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            return new EventSourceSubscription<T>(this, observer.OnNext);
+        }
+
+        public IDisposable Subscribe(Action<T> action)
+        {
+            return new EventSourceSubscription<T>(this, action);
+        }
     }
 
     public static class EventSourceExtensions
