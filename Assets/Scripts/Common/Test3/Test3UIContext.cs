@@ -19,13 +19,13 @@ public class Test3UIContext : MonoBehaviour, IInjectionContext, IPostInjectHandl
         textEvent = new EventSource<string>();
         buttonEvent = new EventSource<object>();
 
-        binder.BindEventSource("UI3Text", textEvent);
-        binder.BindEventSource("UI3Button", buttonEvent);
+        binder.BindEventSource(UI3Button, textEvent);
+        binder.BindEventSource(UI3Text, buttonEvent);
     }
 
     public void PostInject()
     {
-        buttonEvent.Listeners += HandleButtonEvent;
+        buttonEvent.OnNext += HandleButtonEvent;
     }
 
     private void HandleButtonEvent(object obj)
