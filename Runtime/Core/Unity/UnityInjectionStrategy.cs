@@ -23,9 +23,8 @@ namespace Cathei.PinInject.Internal
 
             if (config != null)
             {
-                // local context should be created
+                // local context should be modified
                 var localContainer = gameObject.GetOrAddContainerComponent().Container;
-
                 localContainer.Reset();
                 localContainer.SetParent(baseContainer);
 
@@ -44,8 +43,14 @@ namespace Cathei.PinInject.Internal
                 {
                     var localContainer = node.container.Container;
 
-                    localContainer.SetParent(
-                        node.parent != null ? node.parent.Container : baseContainer);
+                    if (node.parent != null)
+                    {
+                        localContainer.SetParent(node.parent.Container);
+                    }
+                    else if (localContainer != baseContainer)
+                    {
+                        localContainer.SetParent(baseContainer);
+                    }
 
                     container = node.container.Container;
                     binder = new DependencyBinder(node.container.Container);
@@ -61,6 +66,7 @@ namespace Cathei.PinInject.Internal
             }
 
             // when it's injected, references should be invalidated
+            // as only on immutable prefab cache can remain valid
             cacheComponent.IsValid = false;
         }
     }
