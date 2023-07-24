@@ -109,12 +109,37 @@ public class Scene2Tests_Instantiation
     }
 
     [Test]
+    public void Test2Scene_OptionalConfig()
+    {
+        var original1 = Pin.Instantiate(originalPrefab, config: binder =>
+        {
+            binder.Bind("Defense", 77);
+        });
+
+        var leaf11 = original1.transform.Find("Leaf1").GetComponent<Test2LeafObject>();
+
+        Assert.AreEqual(10, leaf11.Power);
+        Assert.AreEqual(15, leaf11.Health);
+        Assert.AreEqual(77, leaf11.Defense);
+
+        var original2 = Pin.Instantiate(originalPrefab, config: binder =>
+        {
+            binder.Bind("Defense", 99);
+        });
+
+        var leaf21 = original2.transform.Find("Leaf1").GetComponent<Test2LeafObject>();
+
+        Assert.AreEqual(10, leaf21.Power);
+        Assert.AreEqual(15, leaf21.Health);
+        Assert.AreEqual(99, leaf21.Defense);
+    }
+
+    [Test]
     public void Test2Scene_OptionalConfigConflict()
     {
+        // This binding should cause error for duplicated configuration vs game object context
         Assert.Throws<InjectionException>(() => Pin.Instantiate(originalPrefab, config: binder =>
         {
-            // this binding should not override anything
-            // because the prefab game object context is given
             binder.Bind("Power", 100);
             binder.Bind("Health", 200);
         }));

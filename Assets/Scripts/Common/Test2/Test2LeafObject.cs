@@ -11,6 +11,9 @@ public class Test2LeafObject : MonoBehaviour
     [Inject("Health")]
     public int Health { get; set; }
 
+    [Inject("Defense")]
+    public int Defense { get; set; }
+
     [Inject]
     public Transform internalRef;
 
