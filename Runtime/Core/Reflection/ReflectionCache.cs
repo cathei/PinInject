@@ -63,7 +63,7 @@ namespace Cathei.PinInject.Internal
 
                     _injectables ??= new List<InjectableProperty>();
                     _injectables.Add(new InjectableProperty(
-                        prop.PropertyType, IdGetter(type, injectAttr), prop.SetValue));
+                        prop.PropertyType, IdGetter(type, injectAttr), prop.SetValue, injectAttr.Optional));
                 }
 
                 if (resolveAttr != null)
@@ -85,7 +85,7 @@ namespace Cathei.PinInject.Internal
                 {
                     _injectables ??= new List<InjectableProperty>();
                     _injectables.Add(new InjectableProperty(
-                        field.FieldType, IdGetter(type, injectAttr), field.SetValue));
+                        field.FieldType, IdGetter(type, injectAttr), field.SetValue, injectAttr.Optional));
                 }
 
                 if (resolveAttr != null)
@@ -127,12 +127,14 @@ namespace Cathei.PinInject.Internal
             public readonly Type Type;
             public readonly Func<object, string> IdGetter;
             public readonly Action<object, object> Setter;
+            public readonly bool Optional;
 
-            public InjectableProperty(Type type, Func<object, string> idGetter, Action<object, object> setter)
+            public InjectableProperty(Type type, Func<object, string> idGetter, Action<object, object> setter, bool optional)
             {
                 Type = type;
                 IdGetter = idGetter;
                 Setter = setter;
+                Optional = optional;
             }
         }
 
