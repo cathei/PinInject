@@ -65,7 +65,7 @@ namespace Cathei.PinInject
             }
         }
 
-        internal static void SetUpScene(SceneCompositionRoot compositionRoot)
+        internal static void SetUpScene(SceneCompositionRoot compositionRoot, ContextConfiguration config = null)
         {
             var compositionRootObject = compositionRoot.gameObject;
             var scene = compositionRootObject.scene;
@@ -76,7 +76,7 @@ namespace Cathei.PinInject
             var persistentContainer = SetUpPersistent(compositionRoot.parent);
 
             // inject scene first
-            UnityStrategy.Inject(compositionRootObject, persistentContainer, null);
+            UnityStrategy.Inject(compositionRootObject, persistentContainer, config);
 
             var sceneContainer = compositionRootObject.GetOrAddContainerComponent();
 
