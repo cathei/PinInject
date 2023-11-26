@@ -39,3 +39,6 @@ sysinfo.txt
 #*.unitypackage
 
 .DS_Store
+
+# Rider
+/.idea/
