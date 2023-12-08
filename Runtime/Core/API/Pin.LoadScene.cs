@@ -1,5 +1,6 @@
 ﻿// PinInject, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -28,6 +29,18 @@ namespace Cathei.PinInject
         {
             sceneContextConfig = config;
             return SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
+        }
+        
+        /// <summary>
+        /// Load and inject config a Scene.
+        /// </summary>
+        /// <remarks>
+        /// Note: Calling this method in parallel may result in improper injection of the Configuration.
+        /// </remarks>
+        public static T LoadSceneAsync<T>(Func<T> loadSceneFunc, ContextConfiguration config = null)
+        {
+            sceneContextConfig = config;
+            return loadSceneFunc();
         }
     }
 }
