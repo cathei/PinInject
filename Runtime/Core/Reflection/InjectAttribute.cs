@@ -13,10 +13,12 @@ namespace Cathei.PinInject
     {
         public readonly string Name;
         public readonly bool FromMember;
+        public readonly bool Optional = false;
 
-        public InjectAttribute()
+        public InjectAttribute(bool optional = false)
         {
             Name = null;
+            Optional = optional;
         }
 
         public InjectAttribute(string name, bool fromMember = false)

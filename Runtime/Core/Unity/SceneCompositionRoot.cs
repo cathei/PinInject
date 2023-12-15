@@ -17,7 +17,7 @@ namespace Cathei.PinInject
 
         private void Awake()
         {
-            Pin.SetUpScene(this);
+            Pin.SetUpScene(this, Pin.sceneContextConfig);
         }
 
         private void OnDestroy()
